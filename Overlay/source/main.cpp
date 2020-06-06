@@ -61,22 +61,22 @@ bool isServiceRunning(const char *serviceName) {
 
 class GuiTest : public tsl::Gui {
 public:
-    GuiTest(u8 arg1, u8 arg2, bool arg3) { }
+	GuiTest(u8 arg1, u8 arg2, bool arg3) { }
 
-    // Called when this Gui gets loaded to create the UI
-    // Allocate all elements on the heap. libtesla will make sure to clean them up when not needed anymore
-    virtual tsl::elm::Element* createUI() override {
-        // A OverlayFrame is the base element every overlay consists of. This will draw the default Title and Subtitle.
-        // If you need more information in the header or want to change it's look, use a HeaderOverlayFrame.
-        auto frame = new tsl::elm::OverlayFrame("ReverseNX-RT", "v1.0.0");
+	// Called when this Gui gets loaded to create the UI
+	// Allocate all elements on the heap. libtesla will make sure to clean them up when not needed anymore
+	virtual tsl::elm::Element* createUI() override {
+		// A OverlayFrame is the base element every overlay consists of. This will draw the default Title and Subtitle.
+		// If you need more information in the header or want to change it's look, use a HeaderOverlayFrame.
+		auto frame = new tsl::elm::OverlayFrame("ReverseNX-RT", "v1.0.0");
 
-        // A list that can contain sub elements and handles scrolling
-        auto list = new tsl::elm::List();
+		// A list that can contain sub elements and handles scrolling
+		auto list = new tsl::elm::List();
 		
 		list->addItem(new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
 			if (SaltySD == false) renderer->drawString("SaltyNX is not working!", false, x, y+50, 20, renderer->a(0xF33F));
 			else if (plugin == false) renderer->drawString("Can't detect ReverseNX-RT plugin!", false, x, y+50, 20, renderer->a(0xF33F));
-            else if (check == false) {
+			else if (check == false) {
 				if (closed == true) renderer->drawString("Game was closed! Overlay disabled!\nExit from overlay and run game first!", false, x, y+20, 19, renderer->a(0xF33F));
 				else renderer->drawString("Game is not running! Overlay disabled!\nExit from overlay and run game first!", false, x, y+20, 19, renderer->a(0xF33F));
 				renderer->drawString(PluginChar, false, x, y+60, 20, renderer->a(0xFFFF));
@@ -95,7 +95,7 @@ public:
 					renderer->drawString(DockedChar, false, x, y+60, 20, renderer->a(0xFFFF));
 				}
 			}
-        }), 100);
+	}), 100);
 
 		if (MAGIC == 0x06BA7E39) {
 			auto *clickableListItem = new tsl::elm::ListItem("Change system control");
@@ -167,15 +167,15 @@ public:
 			list->addItem(clickableListItem);
 		}
 
-        // Add the list to the frame for it to be drawn
-        frame->setContent(list);
+		// Add the list to the frame for it to be drawn
+		frame->setContent(list);
         
-        // Return the frame to have it become the top level element of this Gui
-        return frame;
-    }
+		// Return the frame to have it become the top level element of this Gui
+		return frame;
+	}
 
-    // Called once every frame to update values
-    virtual void update() override {
+	// Called once every frame to update values
+	virtual void update() override {
 		static uint8_t i = 0;
 		if (R_FAILED(pmdmntGetApplicationProcessId(&PID)) && PluginRunning == true) {
 			remove("sdmc:/SaltySD/ReverseNX-RT.hex");
@@ -204,18 +204,18 @@ public:
 		if (bak == false) sprintf(PluginChar, "ReverseNX-RT plugin is activated.");
 		else sprintf(PluginChar, "ReverseNX-RT plugin is deactivated.");
 	
-    }
+	}
 
-    // Called once every frame to handle inputs not handled by other UI elements
-    virtual bool handleInput(u64 keysDown, u64 keysHeld, touchPosition touchInput, JoystickPosition leftJoyStick, JoystickPosition rightJoyStick) override {
-        return false;   // Return true here to singal the inputs have been consumed
-    }
+	// Called once every frame to handle inputs not handled by other UI elements
+	virtual bool handleInput(u64 keysDown, u64 keysHeld, touchPosition touchInput, JoystickPosition leftJoyStick, JoystickPosition rightJoyStick) override {
+		return false;   // Return true here to singal the inputs have been consumed
+	}
 };
 
 class OverlayTest : public tsl::Overlay {
 public:
 	// libtesla already initialized fs, hid, pl, pmdmnt, hid:sys and set:sys
-    virtual void initServices() override {
+	virtual void initServices() override {
 		smInitialize();
 		fsdevMountSdmc();
 		
@@ -285,20 +285,20 @@ public:
 	
 	}  // Called at the start to initialize all services necessary for this Overlay
 	
-    virtual void exitServices() override {
+	virtual void exitServices() override {
 		dmntchtExit();
 		if (dmntcht == false) svcCloseHandle(debug);
 		fsdevUnmountDevice("sdmc");
 		smExit();
 	}  // Callet at the end to clean up all services previously initialized
 
-    virtual void onShow() override {}    // Called before overlay wants to change from invisible to visible state
+	virtual void onShow() override {}    // Called before overlay wants to change from invisible to visible state
 	
-    virtual void onHide() override {}    // Called before overlay wants to change from visible to invisible state
+	virtual void onHide() override {}    // Called before overlay wants to change from visible to invisible state
 
-    virtual std::unique_ptr<tsl::Gui> loadInitialGui() override {
-        return initially<GuiTest>(1, 2, true);  // Initial Gui to load. It's possible to pass arguments to it's constructor like this
-    }
+	virtual std::unique_ptr<tsl::Gui> loadInitialGui() override {
+		return initially<GuiTest>(1, 2, true);  // Initial Gui to load. It's possible to pass arguments to it's constructor like this
+	}
 };
 
 int main(int argc, char **argv) {
