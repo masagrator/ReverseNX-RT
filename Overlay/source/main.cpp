@@ -262,9 +262,10 @@ public:
 						dmntchtReadCheatProcessMemory(MAGIC_address, &MAGIC, 0x4);
 						PluginRunning = true;
 					}
+					else dmntcht = false;
 				}
-				else {
-					dmntcht = false;
+
+				if (dmntcht == false) {
 					svcSleepThread(1'000'000'000);
 					if (R_SUCCEEDED(svcDebugActiveProcess(&debug, PID))) {
 						svcReadDebugProcessMemory(&isDocked, debug, docked_address, 0x1);
