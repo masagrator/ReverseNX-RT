@@ -46,7 +46,7 @@ You have option to (de)activate plugin from this menu. Deactivating it will resu
 # Troubleshooting:
 Q: Often when I'm closing game, Atmosphere crashes with error 0x41001. Why?
 
-A: Atmosphere 0.12.0 with new options for cheat engine bringed bug that causes showing this error in random instances. For some reason this overlay makes this bug occur more frequently. Either go back to 0.11.1 or wait for new release. 
+A: Atmosphere 0.12.0 with new options for cheat engine bringed bug that causes showing this error in random instances. For some reason this overlay makes this bug occur more frequently. Either go back to 0.11.1 or update to newer version.
 
 # Links:
 
