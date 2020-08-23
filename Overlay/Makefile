@@ -42,9 +42,9 @@ APP_VERSION	:=	1.0.1
 
 TARGET		:=	ReverseNX-RT-ovl
 BUILD		:=	build
-SOURCES		:=	source source/libstratosphere
+SOURCES		:=	source libs/Atmosphere-libs/libstratosphere/source/dmnt
 DATA		:=	data
-INCLUDES	:=	include libs/libtesla/include include/libstratosphere
+INCLUDES	:=	include libs/libtesla/include libs/Atmosphere-libs/libstratosphere/source/dmnt libs/Atmosphere-libs/libstratosphere/source
 
 NO_ICON		:=  1
 
