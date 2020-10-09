@@ -22,41 +22,36 @@ char SystemChar[32];
 char PluginChar[36];
 
 bool CheckPort () {
-	Result ret;
 	Handle saltysd;
-	for (int i = 0; i < 200; i++) {
-		ret = svcConnectToNamedPort(&saltysd, "InjectServ");
-		svcSleepThread(1'000'000);
-		
-		if (R_SUCCEEDED(ret)) {
+	for (int i = 0; i < 34; i++) {
+		if (R_SUCCEEDED(svcConnectToNamedPort(&saltysd, "InjectServ"))) {
 			svcCloseHandle(saltysd);
 			break;
 		}
-	}
-	if (R_FAILED(ret)) return false;
-	for (int i = 0; i < 200; i++) {
-		ret = svcConnectToNamedPort(&saltysd, "InjectServ");
-		svcSleepThread(1'000'000);
-		
-		if (R_SUCCEEDED(ret)) {
-			svcCloseHandle(saltysd);
-			break;
+		else {
+			if (i == 33) return false;
+			svcSleepThread(1'000'000);
 		}
 	}
-	if (R_FAILED(ret)) return false;
-	else return true;
+	for (int i = 0; i < 34; i++) {
+		if (R_SUCCEEDED(svcConnectToNamedPort(&saltysd, "InjectServ"))) {
+			svcCloseHandle(saltysd);
+			return true;
+		}
+		else svcSleepThread(1'000'000);
+	}
+	return false;
 }
 
 bool isServiceRunning(const char *serviceName) {	
 	Handle handle;	
 	SmServiceName service_name = smEncodeName(serviceName);	
-	bool running = R_FAILED(smRegisterService(&handle, service_name, false, 1));	
-
-	svcCloseHandle(handle);	
-
-	if (!running) smUnregisterService(service_name);	
-
-	return running;	
+	if (R_FAILED(smRegisterService(&handle, service_name, false, 1))) return false;
+	else {
+		svcCloseHandle(handle);	
+		smUnregisterService(service_name);
+		return true;
+	}
 }
 
 class GuiTest : public tsl::Gui {
@@ -68,7 +63,7 @@ public:
 	virtual tsl::elm::Element* createUI() override {
 		// A OverlayFrame is the base element every overlay consists of. This will draw the default Title and Subtitle.
 		// If you need more information in the header or want to change it's look, use a HeaderOverlayFrame.
-		auto frame = new tsl::elm::OverlayFrame("ReverseNX-RT", "v1.0.1");
+		auto frame = new tsl::elm::OverlayFrame("ReverseNX-RT", APP_VERSION);
 
 		// A list that can contain sub elements and handles scrolling
 		auto list = new tsl::elm::List();
