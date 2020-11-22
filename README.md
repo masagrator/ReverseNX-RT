@@ -44,6 +44,12 @@ You have option to (de)activate plugin from this menu. Deactivating it will resu
 - **WRONG MAGIC!** - something went horribly wrong and overlay is reading value from wrong memory position. It should not happen if you are opening overlay after game boot process will finish. It may also happen if you will close overlay before closing game and open it after running next game, this time not compatible with SaltyNX.
 
 # Troubleshooting:
+List of titles not compatible with ReverseNX-RT:
+
+| Title | Versions | Why? |
+| ------------- | ------------- | ------------- |
+| Robotics;Notes Elite | 1.0.1 | Broken PopNotificationMessage() thread |
+
 Q: Often when I'm closing game, Atmosphere crashes with error 0x41001. Why?
 
 A: Atmosphere 0.12.0 with new options for cheat engine bringed bug that causes showing this error in random instances. For some reason this overlay makes this bug occur more frequently. Either go back to 0.11.1 or update to newer version.
