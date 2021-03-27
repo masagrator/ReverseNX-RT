@@ -48,6 +48,7 @@ List of titles not compatible with ReverseNX-RT:
 
 | Title | Versions | Why? |
 | ------------- | ------------- | ------------- |
+| Monster Hunter Rise | 1.0.0-1.1.1 + possible later version | MessageEvent is used, to recognize plugin and apply changes you need to go back to qlaunch and back to game |
 | Robotics;Notes Elite | 1.0.1 | Broken PopNotificationMessage() thread |
 
 Q: Often when I'm closing game, Atmosphere crashes with error 0x41001. Why?
