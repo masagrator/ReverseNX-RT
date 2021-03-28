@@ -44,12 +44,12 @@ You have option to (de)activate plugin from this menu. Deactivating it will resu
 - **WRONG MAGIC!** - something went horribly wrong and overlay is reading value from wrong memory position. It should not happen if you are opening overlay after game boot process will finish. It may also happen if you will close overlay before closing game and open it after running next game, this time not compatible with SaltyNX.
 
 # Troubleshooting:
-List of titles not compatible with ReverseNX-RT:
+List of titles having compability issues with ReverseNX-RT:
 
 | Title | Versions | Why? |
 | ------------- | ------------- | ------------- |
 | Monster Hunter Rise | 1.0.0-1.1.1 + possible later version | MessageEvent is used, to recognize plugin and apply changes you need to go back to qlaunch and back to game |
-| Robotics;Notes Elite | 1.0.1 | Broken PopNotificationMessage() thread |
+| Robotics;Notes Elite | 1.0.1 | Broken PopNotificationMessage() thread, not working at all |
 
 Q: Often when I'm closing game, Atmosphere crashes with error 0x41001. Why?
 
