@@ -95,7 +95,7 @@ public:
 		if (MAGIC == 0x06BA7E39) {
 			auto *clickableListItem = new tsl::elm::ListItem("Change system control");
 			clickableListItem->setClickListener([](u64 keys) { 
-				if (keys & KEY_A) {
+				if (keys & HidNpadButton_A) {
 					if (PluginRunning == true) {
 						def = !def;
 						if (dmntcht == true) {
@@ -120,7 +120,7 @@ public:
 			
 			auto *clickableListItem2 = new tsl::elm::ListItem("Change mode");
 			clickableListItem2->setClickListener([](u64 keys) { 
-				if (keys & KEY_A) {
+				if (keys & HidNpadButton_A) {
 					if (PluginRunning == true && def == false) {
 						isDocked =! isDocked;
 						if (dmntcht == true) {
@@ -145,7 +145,7 @@ public:
 		else if (SaltySD == true && plugin == true && check == false) {
 			auto *clickableListItem = new tsl::elm::ListItem("(De)activate plugin");
 			clickableListItem->setClickListener([](u64 keys) { 
-				if (keys & KEY_A) {
+				if (keys & HidNpadButton_A) {
 					if (bak == false) {
 						rename("sdmc:/SaltySD/plugins/ReverseNX-RT.elf", "sdmc:/SaltySD/plugins/ReverseNX-RT.elf.bak");
 						bak = true;
@@ -202,7 +202,7 @@ public:
 	}
 
 	// Called once every frame to handle inputs not handled by other UI elements
-	virtual bool handleInput(u64 keysDown, u64 keysHeld, touchPosition touchInput, JoystickPosition leftJoyStick, JoystickPosition rightJoyStick) override {
+	virtual bool handleInput(u64 keysDown, u64 keysHeld, const HidTouchState &touchPos, HidAnalogStickState joyStickPosLeft, HidAnalogStickState joyStickPosRight) override {
 		return false;   // Return true here to singal the inputs have been consumed
 	}
 };
