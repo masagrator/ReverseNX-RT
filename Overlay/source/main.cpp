@@ -1,25 +1,53 @@
 #define TESLA_INIT_IMPL // If you have more than one file using the tesla header, only define this in the main one
 #include <tesla.hpp>    // The Tesla Header
-#include "dmntcht.h"
+#include "SaltyNX.h"
 
-bool def = true;
-bool isDocked = false;
+bool* def = 0;
+bool* isDocked = 0;
+bool* pluginActive = 0;
+bool _isDocked = false;
+bool _def = true;
 bool PluginRunning = false;
+bool state = false;
 bool closed = false;
-Handle debug;
-uintptr_t docked_address = 0x0;
-uintptr_t def_address = 0x0;
-uintptr_t MAGIC_address = 0x0;
-uint64_t PID = 0;
-uint32_t MAGIC = 0x0;
 bool check = false;
-bool dmntcht = false;
 bool SaltySD = false;
 bool bak = false;
 bool plugin = false;
 char DockedChar[32];
 char SystemChar[32];
 char PluginChar[36];
+uint64_t PID = 0;
+Handle remoteSharedMemory = 1;
+SharedMemory _sharedmemory = {};
+bool SharedMemoryUsed = false;
+
+bool LoadSharedMemory() {
+	if (SaltySD_Connect())
+		return false;
+
+	SaltySD_GetSharedMemoryHandle(&remoteSharedMemory);
+	SaltySD_Term();
+
+	shmemLoadRemote(&_sharedmemory, remoteSharedMemory, 0x1000, Perm_Rw);
+	if (!shmemMap(&_sharedmemory)) {
+		SharedMemoryUsed = true;
+		return true;
+	}
+	return false;
+}
+
+ptrdiff_t searchSharedMemoryBlock(uintptr_t base) {
+	ptrdiff_t search_offset = 0;
+	while(search_offset < 0x1000) {
+		uint32_t* MAGIC_shared = (uint32_t*)(base + search_offset);
+		if (*MAGIC_shared == 0x5452584E) {
+			return search_offset;
+		}
+		else search_offset += 4;
+	}
+	return -1;
+}
 
 bool CheckPort () {
 	Handle saltysd;
@@ -43,17 +71,6 @@ bool CheckPort () {
 	return false;
 }
 
-bool isServiceRunning(const char *serviceName) {	
-	Handle handle;	
-	SmServiceName service_name = smEncodeName(serviceName);	
-	if (R_FAILED(smRegisterService(&handle, service_name, false, 1))) return true;
-	else {
-		svcCloseHandle(handle);	
-		smUnregisterService(service_name);
-		return false;
-	}
-}
-
 class GuiTest : public tsl::Gui {
 public:
 	GuiTest(u8 arg1, u8 arg2, bool arg3) { }
@@ -69,22 +86,29 @@ public:
 		auto list = new tsl::elm::List();
 		
 		list->addItem(new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
-			if (SaltySD == false) renderer->drawString("SaltyNX is not working!", false, x, y+50, 20, renderer->a(0xF33F));
-			else if (plugin == false) renderer->drawString("Can't detect ReverseNX-RT plugin!", false, x, y+50, 20, renderer->a(0xF33F));
-			else if (check == false) {
-				if (closed == true) renderer->drawString("Game was closed! Overlay disabled!\nExit from overlay and run game first!", false, x, y+20, 19, renderer->a(0xF33F));
-				else renderer->drawString("Game is not running! Overlay disabled!\nExit from overlay and run game first!", false, x, y+20, 19, renderer->a(0xF33F));
+			if (!SaltySD) {
+				renderer->drawString("SaltyNX is not working!", false, x, y+50, 20, renderer->a(0xF33F));
+			}
+			else if (!plugin) {
+				renderer->drawString("Can't detect ReverseNX-RT plugin!", false, x, y+50, 20, renderer->a(0xF33F));
+			}
+			else if (!check) {
+				if (closed) {
+					renderer->drawString("Game was closed! Overlay disabled!", false, x, y+20, 19, renderer->a(0xF33F));
+				}
+				else {
+					renderer->drawString("Game is not running! Overlay disabled!", false, x, y+20, 19, renderer->a(0xF33F));
+				}
 				renderer->drawString(PluginChar, false, x, y+60, 20, renderer->a(0xFFFF));
 			}
-			else if (PluginRunning == false) {
+			else if (!PluginRunning) {
 				renderer->drawString("Game is running.", false, x, y+20, 20, renderer->a(0xFFFF));
 				renderer->drawString("ReverseNX-RT is not running!", false, x, y+40, 20, renderer->a(0xF33F));
 				renderer->drawString(PluginChar, false, x, y+60, 20, renderer->a(0xFFFF));
 			}
 			else {
 				renderer->drawString("ReverseNX-RT plugin is running.", false, x, y+20, 20, renderer->a(0xFFFF));
-				if (MAGIC == 0x16BA7E39) renderer->drawString("Game doesn't support changing modes!", false, x, y+40, 18, renderer->a(0xF33F));
-				else if (MAGIC != 0x06BA7E39) renderer->drawString("WRONG MAGIC!", false, x, y+40, 20, renderer->a(0xF33F));
+				if (!*pluginActive) renderer->drawString("Game didn't check any mode!", false, x, y+40, 18, renderer->a(0xF33F));
 				else {
 					renderer->drawString(SystemChar, false, x, y+40, 20, renderer->a(0xFFFF));
 					renderer->drawString(DockedChar, false, x, y+60, 20, renderer->a(0xFFFF));
@@ -92,25 +116,12 @@ public:
 			}
 	}), 100);
 
-		if (MAGIC == 0x06BA7E39) {
+		if (PluginRunning && *pluginActive) {
 			auto *clickableListItem = new tsl::elm::ListItem("Change system control");
 			clickableListItem->setClickListener([](u64 keys) { 
-				if (keys & HidNpadButton_A) {
-					if (PluginRunning == true) {
-						def = !def;
-						if (dmntcht == true) {
-							dmntchtWriteCheatProcessMemory(def_address, &def, 0x1);
-							dmntchtReadCheatProcessMemory(def_address, &def, 0x1);
-							return true;
-						}
-						else if (R_SUCCEEDED(svcDebugActiveProcess(&debug, PID))) {
-							svcWriteDebugProcessMemory(debug, &def, def_address, 0x1);
-							svcReadDebugProcessMemory(&def, debug, def_address, 0x1);
-							svcCloseHandle(debug);
-							return true;
-						}
-					}
-					else return false;
+				if ((keys & HidNpadButton_A) && PluginRunning) {
+					_def = !_def;
+					*def = _def;
 				}
 
 				return false;
@@ -120,39 +131,28 @@ public:
 			
 			auto *clickableListItem2 = new tsl::elm::ListItem("Change mode");
 			clickableListItem2->setClickListener([](u64 keys) { 
-				if (keys & HidNpadButton_A) {
-					if (PluginRunning == true && def == false) {
-						isDocked =! isDocked;
-						if (dmntcht == true) {
-							dmntchtWriteCheatProcessMemory(docked_address, &isDocked, 0x1);
-							dmntchtReadCheatProcessMemory(docked_address, &isDocked, 0x1);
-							return true;
-						}
-						else if (R_SUCCEEDED(svcDebugActiveProcess(&debug, PID))) {
-							svcWriteDebugProcessMemory(debug, &isDocked, docked_address, 0x1);
-							svcReadDebugProcessMemory(&isDocked, debug, docked_address, 0x1);
-							svcCloseHandle(debug);
-							return true;
-						}
-					}
-					else return false;
+				if ((keys & HidNpadButton_A) && PluginRunning && !_def) {
+					_isDocked = !_isDocked;
+					*isDocked = _isDocked;
 				}
 				
 				return false;
 			});
 			list->addItem(clickableListItem2);
 		}
-		else if (SaltySD == true && plugin == true && check == false) {
+		else if (SaltySD && plugin && !check) {
 			auto *clickableListItem = new tsl::elm::ListItem("(De)activate plugin");
 			clickableListItem->setClickListener([](u64 keys) { 
 				if (keys & HidNpadButton_A) {
-					if (bak == false) {
+					if (!bak) {
 						rename("sdmc:/SaltySD/plugins/ReverseNX-RT.elf", "sdmc:/SaltySD/plugins/ReverseNX-RT.elf.bak");
 						bak = true;
+						sprintf(PluginChar, "ReverseNX-RT plugin is activated.");
 					}
 					else {
 						rename("sdmc:/SaltySD/plugins/ReverseNX-RT.elf.bak", "sdmc:/SaltySD/plugins/ReverseNX-RT.elf");
 						bak = false;
+						sprintf(PluginChar, "ReverseNX-RT plugin is deactivated.");
 					}
 					return true;
 				}
@@ -172,32 +172,27 @@ public:
 	// Called once every frame to update values
 	virtual void update() override {
 		static uint8_t i = 0;
-		if (R_FAILED(pmdmntGetApplicationProcessId(&PID)) && PluginRunning == true) {
-			remove("sdmc:/SaltySD/ReverseNX-RT.hex");
+		Result rc = pmdmntGetApplicationProcessId(&PID);
+		if (R_FAILED(rc) && PluginRunning) {
 			PluginRunning = false;
 			check = false;
 			closed = true;
 		}
-		if (PluginRunning == true) {
+
+		if (PluginRunning) {
 			if (i > 59) {
-				if (dmntcht == true) dmntchtReadCheatProcessMemory(docked_address, &isDocked, 0x1);
-				else if (R_SUCCEEDED(svcDebugActiveProcess(&debug, PID))) {
-					svcReadDebugProcessMemory(&isDocked, debug, docked_address, 0x1);
-					svcCloseHandle(debug);
-				}
+				_def = *def;
+				_isDocked = *isDocked;
 				i = 0;
+
+				if (_isDocked) sprintf(DockedChar, "Mode: Docked");
+				else sprintf(DockedChar, "Mode: Handheld");
+				
+				if (_def) sprintf(SystemChar, "Controlled by system: Yes");
+				else sprintf(SystemChar, "Controlled by system: No");
 			}
 			else i++;
 		}
-		
-		if (isDocked == true) sprintf(DockedChar, "Mode: Docked");
-		else sprintf(DockedChar, "Mode: Handheld");
-		
-		if (def == true) sprintf(SystemChar, "Controlled by system: Yes");
-		else sprintf(SystemChar, "Controlled by system: No");
-		
-		if (bak == false) sprintf(PluginChar, "ReverseNX-RT plugin is activated.");
-		else sprintf(PluginChar, "ReverseNX-RT plugin is deactivated.");
 	
 	}
 
@@ -211,81 +206,53 @@ class OverlayTest : public tsl::Overlay {
 public:
 	// libtesla already initialized fs, hid, pl, pmdmnt, hid:sys and set:sys
 	virtual void initServices() override {
-		smInitialize();
-		fsdevMountSdmc();
-		
-		SaltySD = CheckPort();
-		if (SaltySD == false) return;
-		
-		FILE* temp = fopen("sdmc:/SaltySD/plugins/ReverseNX-RT.elf", "r");
-		if (temp != NULL) {
-			fclose(temp);
-			plugin = true;
-			sprintf(PluginChar, "ReverseNX-RT plugin is activated.");
-		}
-		else {
-			temp = fopen("sdmc:/SaltySD/plugins/ReverseNX-RT.elf.bak", "r");
-			if (temp != NULL) {
+
+		tsl::hlp::doWithSmSession([]{
+			
+			fsdevMountSdmc();
+			SaltySD = CheckPort();
+			if (!SaltySD) return;
+
+			FILE* temp = fopen("sdmc:/SaltySD/plugins/ReverseNX-RT.elf", "rb");
+			if (temp) {
 				fclose(temp);
 				plugin = true;
-				bak = true;
-				sprintf(PluginChar, "ReverseNX-RT plugin is deactivated.");
+				sprintf(PluginChar, "ReverseNX-RT plugin is activated.");
 			}
-			else return;
-		}
+			else {
+				temp = fopen("sdmc:/SaltySD/plugins/ReverseNX-RT.elf.bak", "rb");
+				if (temp) {
+					fclose(temp);
+					plugin = true;
+					bak = true;
+					sprintf(PluginChar, "ReverseNX-RT plugin is deactivated.");
+				}
+				else return;
+			}
 
-		if (R_FAILED(pmdmntGetApplicationProcessId(&PID))) remove("sdmc:/SaltySD/ReverseNX-RT.hex");
-		else {
+			if (R_FAILED(pmdmntGetApplicationProcessId(&PID))) return;
 			check = true;
-			svcSleepThread(1'000'000'000);
-			FILE* offset = fopen("sdmc:/SaltySD/ReverseNX-RT.hex", "rb");
-			if (offset != NULL) {
-				fread(&docked_address, 0x5, 1, offset);
-				fread(&def_address, 0x5, 1, offset);
-				fread(&MAGIC_address, 0x5, 1, offset);
-				fclose(offset);
-				
-				dmntcht = isServiceRunning("dmnt:cht");
-				
-				if (dmntcht == true) {
-					if (R_SUCCEEDED(dmntchtInitialize())) {
-						bool out = false;
-						dmntchtHasCheatProcess(&out);
-						if (out == false) dmntchtForceOpenCheatProcess();
-						dmntchtReadCheatProcessMemory(docked_address, &isDocked, 0x1);
-						dmntchtReadCheatProcessMemory(def_address, &def, 0x1);
-						dmntchtReadCheatProcessMemory(MAGIC_address, &MAGIC, 0x4);
-						PluginRunning = true;
-					}
-					else dmntcht = false;
-				}
+			
+			if(!LoadSharedMemory()) return;
 
-				if (dmntcht == false) {
-					svcSleepThread(1'000'000'000);
-					if (R_SUCCEEDED(svcDebugActiveProcess(&debug, PID))) {
-						svcReadDebugProcessMemory(&isDocked, debug, docked_address, 0x1);
-						svcReadDebugProcessMemory(&def, debug, def_address, 0x1);
-						svcReadDebugProcessMemory(&MAGIC, debug, MAGIC_address, 0x4);
-						svcCloseHandle(debug);
-						PluginRunning = true;
-					}
-				}
+			if (!PluginRunning) {
+				uintptr_t base = (uintptr_t)shmemGetAddr(&_sharedmemory);
+				ptrdiff_t rel_offset = searchSharedMemoryBlock(base);
+				if (rel_offset > -1) {
+					isDocked = (bool*)(base + rel_offset + 4);
+					def = (bool*)(base + rel_offset + 5);
+					pluginActive = (bool*)(base + rel_offset + 6);
+					PluginRunning = true;
+				}		
 			}
-		}
 		
-		if (isDocked == true) sprintf(DockedChar, "Mode: Docked");
-		else sprintf(DockedChar, "Mode: Handheld");
-		
-		if (def == true) sprintf(SystemChar, "Controlled by system: Yes");
-		else sprintf(SystemChar, "Controlled by system: No");
+		});
 	
 	}  // Called at the start to initialize all services necessary for this Overlay
 	
 	virtual void exitServices() override {
-		dmntchtExit();
-		if (dmntcht == false) svcCloseHandle(debug);
+		shmemClose(&_sharedmemory);
 		fsdevUnmountDevice("sdmc");
-		smExit();
 	}  // Callet at the end to clean up all services previously initialized
 
 	virtual void onShow() override {}    // Called before overlay wants to change from invisible to visible state
