@@ -14,6 +14,7 @@ extern "C" {
 	int SaltySDCore_mkdir(const char* dirname, mode_t mode) LINKABLE;
 	size_t SaltySDCore_fwrite(const void *ptr, size_t size, size_t count, FILE *stream) LINKABLE;
 	extern int SaltySDCore_remove(const char* filename) LINKABLE;
+	Result SaltySDCore_printf(const char* format, ...) LINKABLE;
 }
 
 #endif // SALTYSD_CORE_H
