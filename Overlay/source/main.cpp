@@ -171,7 +171,7 @@ public:
 
 	// Called once every frame to update values
 	virtual void update() override {
-		static uint8_t i = 0;
+		static uint8_t i = 10;
 		Result rc = pmdmntGetApplicationProcessId(&PID);
 		if (R_FAILED(rc) && PluginRunning) {
 			PluginRunning = false;
@@ -180,7 +180,7 @@ public:
 		}
 
 		if (PluginRunning) {
-			if (i > 59) {
+			if (i > 9) {
 				_def = *def;
 				_isDocked = *isDocked;
 				i = 0;
