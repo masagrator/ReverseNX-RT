@@ -2,11 +2,11 @@
 
 Alternative version of ReverseNX that can switch between handheld and docked mode in **R**eal **T**ime.
 
-Requires SaltyNX and Tesla environment installed. Links at the end of readme.
+Requires SaltyNX 0.5.0+ and Tesla environment installed. Links at the end of readme.
 
 It's compatible with ReverseNX patches/ReverseNX-Tool 2.0.0+.
 
-It's not compatible with deprecated ReverseNX plugin. 
+It's not compatible with deprecated ReverseNX plugin.
 
 **Do not use ReverseNX-RT next to Status Monitor 0.6.0 or older** (Tesla can crash on Atmosphere if you are using NX-FPS)
 
