@@ -25,10 +25,14 @@ u32 __nx_applet_type = AppletType_None;
 Handle orig_main_thread;
 void* orig_ctx;
 void* orig_saved_lr;
-bool def = true;
-uint8_t isDocked = 0;
-uint32_t MAGIC = 0x16BA7E39;
-const char* ver = "1.0";
+bool* def_shared = 0;
+bool* isDocked_shared = 0;
+bool* pluginActive_shared = 0;
+const char* ver = "1.1";
+
+SharedMemory _sharedmemory = {};
+Handle remoteSharedMemory = 0;
+ptrdiff_t SharedMemoryOffset = -1;
 
 void __libnx_init(void* ctx, Handle main_thread, void* saved_lr) {
 	extern char* fake_heap_start;
@@ -44,6 +48,7 @@ void __libnx_init(void* ctx, Handle main_thread, void* saved_lr) {
 	// Call constructors.
 	//void __libc_init_array(void);
 	__libc_init_array();
+	virtmemSetup();
 }
 
 void __attribute__((weak)) NORETURN __libnx_exit(int rc) {
@@ -63,16 +68,16 @@ bool TryPopNotificationMessage(int &msg) {
 	static bool check2 = true;
 	static bool compare = false;
 	static bool compare2 = false;
-	
-	if (MAGIC == 0x16BA7E39) MAGIC = 0x06BA7E39;
 
-	if (def == true) {
-		if (check1 == false) {
+	*pluginActive_shared = true;
+
+	if (*def_shared) {
+		if (!check1) {
 			check1 = true;
 			msg = 0x1f;
 			return true;
 		}
-		else if (check2 == false) {
+		else if (!check2) {
 			check2 = true;
 			msg = 0x1e;
 			return true;
@@ -82,13 +87,13 @@ bool TryPopNotificationMessage(int &msg) {
 	
 	check1 = false;
 	check2 = false;
-	if (compare2 != isDocked) {
-		compare2 = isDocked;
+	if (compare2 != *isDocked_shared) {
+		compare2 = *isDocked_shared;
 		msg = 0x1f;
 		return true;
 	}
-	if (compare != isDocked) {
-		compare = isDocked;
+	if (compare != *isDocked_shared) {
+		compare = *isDocked_shared;
 		msg = 0x1e;
 		return true;
 	}
@@ -103,14 +108,14 @@ int PopNotificationMessage() {
 	static bool compare = false;
 	static bool compare2 = false;
 	
-	if (MAGIC == 0x16BA7E39) MAGIC = 0x06BA7E39;
+	*pluginActive_shared = true;
 	
-	if (def == true) {
-		if (check1 == false) {
+	if (*def_shared) {
+		if (!check1) {
 			check1 = true;
 			return 0x1e;
 		}
-		else if (check2 == false) {
+		else if (!check2) {
 			check2 = true;
 			return 0x1f;
 		}
@@ -120,12 +125,12 @@ int PopNotificationMessage() {
 	check1 = false;
 	check2 = false;
 
-	if (compare2 != isDocked) {
-		compare2 = isDocked;
+	if (compare2 != *isDocked_shared) {
+		compare2 = *isDocked_shared;
 		return 0x1e;
 	}
-	else if (compare != isDocked) {
-		compare = isDocked;
+	else if (compare != *isDocked_shared) {
+		compare = *isDocked_shared;
 		return 0x1f;
 	}
 	
@@ -133,33 +138,46 @@ int PopNotificationMessage() {
 }
 
 uint32_t GetPerformanceMode() {
-	if (def == true) isDocked = _ZN2nn2oe18GetPerformanceModeEv();
+	if (*def_shared) *isDocked_shared = _ZN2nn2oe18GetPerformanceModeEv();
 	
-	return isDocked;
+	return *isDocked_shared;
 }
 
 uint8_t GetOperationMode() {
-	if (def == true) isDocked = _ZN2nn2oe16GetOperationModeEv();
+	if (*def_shared) *isDocked_shared = _ZN2nn2oe16GetOperationModeEv();
 	
-	return isDocked;
+	return *isDocked_shared;
 }
 
 int main(int argc, char *argv[]) {
-	SaltySD_printf("SaltySD ReverseNX-RT %s: alive\n", ver);
+	SaltySDCore_printf("ReverseNX-RT %s: alive\n", ver);
+	Result ret = SaltySD_CheckIfSharedMemoryAvailable(&SharedMemoryOffset, 7);
+	SaltySDCore_printf("ReverseNX-RT: SharedMemory ret: 0x%X\n", ret);
+	if (!ret) {
+		SaltySDCore_printf("ReverseNX-RT: SharedMemory MemoryOffset: %d\n", SharedMemoryOffset);
+		SaltySD_GetSharedMemoryHandle(&remoteSharedMemory);
+		shmemLoadRemote(&_sharedmemory, remoteSharedMemory, 0x1000, Perm_Rw);
+		Result rc = shmemMap(&_sharedmemory);
+		if (R_SUCCEEDED(rc)) {
+			uintptr_t base = (uintptr_t)shmemGetAddr(&_sharedmemory) + SharedMemoryOffset;
+			uint32_t* MAGIC = (uint32_t*)base;
+			*MAGIC = 0x5452584E;
+			isDocked_shared = (bool*)(base + 4);
+			def_shared = (bool*)(base + 5);
+			pluginActive_shared = (bool*)(base + 6);
+			*isDocked_shared = false;
+			*def_shared = true;
+			*pluginActive_shared = false;
+			SaltySDCore_ReplaceImport("_ZN2nn2oe25TryPopNotificationMessageEPj", (void*)TryPopNotificationMessage);
+			SaltySDCore_ReplaceImport("_ZN2nn2oe22PopNotificationMessageEv", (void*)PopNotificationMessage);
+			SaltySDCore_ReplaceImport("_ZN2nn2oe18GetPerformanceModeEv", (void*)GetPerformanceMode);
+			SaltySDCore_ReplaceImport("_ZN2nn2oe16GetOperationModeEv", (void*)GetOperationMode);
+			SaltySDCore_printf("SaltySD ReverseNX-RT %s: injection finished correctly\n", ver);
+		}
+		else {
+			SaltySDCore_printf("SaltySD ReverseNX-RT %s: error 0x%X. Couldn't map shmem\n", ver, rc);
+		}
+	}
 	
-	FILE* offset = SaltySDCore_fopen("sdmc:/SaltySD/ReverseNX-RT.hex", "wb");
-	uint64_t ptr = (uint64_t)&isDocked;
-	SaltySDCore_fwrite(&ptr, 0x5, 1, offset);
-	ptr = (uint64_t)&def;
-	SaltySDCore_fwrite(&ptr, 0x5, 1, offset);
-	ptr = (uint64_t)&MAGIC;
-	SaltySDCore_fwrite(&ptr, 0x5, 1, offset);
-	SaltySDCore_fclose(offset);
-	
-	SaltySDCore_ReplaceImport("_ZN2nn2oe25TryPopNotificationMessageEPj", (void*)TryPopNotificationMessage);
-	SaltySDCore_ReplaceImport("_ZN2nn2oe22PopNotificationMessageEv", (void*)PopNotificationMessage);
-	SaltySDCore_ReplaceImport("_ZN2nn2oe18GetPerformanceModeEv", (void*)GetPerformanceMode);
-	SaltySDCore_ReplaceImport("_ZN2nn2oe16GetOperationModeEv", (void*)GetOperationMode);
-	
-	SaltySD_printf("SaltySD ReverseNX-RT %s: injection finished\n", ver);
+	SaltySDCore_printf("SaltySD ReverseNX-RT %s: injection finished\n", ver);
 }

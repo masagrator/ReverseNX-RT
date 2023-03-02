@@ -7,6 +7,8 @@
 #pragma once
 #include "../types.h"
 
+void virtmemSetup(void);
+
 /**
  * @brief Reserves a slice of general purpose address space.
  * @param size The size of the slice of address space that will be reserved (rounded up to page alignment).
