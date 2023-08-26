@@ -1,8 +1,8 @@
 #include <switch_min.h>
 
-#include "saltysd/saltysd_core.h"
-#include "saltysd/saltysd_ipc.h"
-#include "saltysd/saltysd_dynamic.h"
+#include "saltysd/SaltySD_core.h"
+#include "saltysd/SaltySD_ipc.h"
+#include "saltysd/SaltySD_dynamic.h"
 
 extern "C" {
 	struct SystemEvent {
@@ -26,6 +26,7 @@ extern "C" {
 	extern void _ZN2nn2oe27GetDefaultDisplayResolutionEPiS1_(int* width, int* height) LINKABLE;
 	extern void _ZN2nn2oe38GetDefaultDisplayResolutionChangeEventEPNS_2os11SystemEventE(SystemEvent* systemEvent) LINKABLE;
 	extern bool _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(SystemEvent* systemEvent) LINKABLE;
+	extern SystemEvent* _ZN2nn2oe27GetNotificationMessageEventEv() LINKABLE;
 }
 
 u32 __nx_applet_type = AppletType_None;
@@ -36,13 +37,14 @@ void* orig_saved_lr;
 bool* def_shared = 0;
 bool* isDocked_shared = 0;
 bool* pluginActive_shared = 0;
-const char* ver = "1.1";
+const char* ver = "1.1.1";
 
 SharedMemory _sharedmemory = {};
 Handle remoteSharedMemory = 0;
 ptrdiff_t SharedMemoryOffset = -1;
 
-SystemEvent* systemEventCopy = 0;
+SystemEvent* defaultDisplayResolutionChangeEventCopy = 0;
+SystemEvent* notificationMessageEventCopy = 0;
 
 void __libnx_init(void* ctx, Handle main_thread, void* saved_lr) {
 	extern char* fake_heap_start;
@@ -177,16 +179,25 @@ void GetDefaultDisplayResolution(int* width, int* height) {
 
 void GetDefaultDisplayResolutionChangeEvent(SystemEvent* systemEvent) {
 	_ZN2nn2oe38GetDefaultDisplayResolutionChangeEventEPNS_2os11SystemEventE(systemEvent);
-	systemEventCopy = systemEvent;
+	defaultDisplayResolutionChangeEventCopy = systemEvent;
+}
+
+SystemEvent* GetNotificationMessageEvent() {
+	notificationMessageEventCopy = _ZN2nn2oe27GetNotificationMessageEventEv();
+	return notificationMessageEventCopy;
 }
 
 bool TryWaitSystemEvent(SystemEvent* systemEvent) {
 	static bool check = true;
 	static bool compare = false;
+	static bool compare1 = false;
+	static bool compare2 = false;
 
-	if (systemEvent != systemEventCopy || *def_shared) {
+	if ((systemEvent != defaultDisplayResolutionChangeEventCopy && systemEvent != notificationMessageEventCopy) || *def_shared) {
 		bool ret = _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(systemEvent);
 		compare = *isDocked_shared;
+		compare1 = *isDocked_shared;
+		compare2 = *isDocked_shared;
 		if (!check) {
 			check = true;
 			return true;
@@ -194,12 +205,24 @@ bool TryWaitSystemEvent(SystemEvent* systemEvent) {
 		return ret;
 	}
 	check = false;
-
-	if (compare != *isDocked_shared) {
-		compare = *isDocked_shared;
-		return true;
+	if (systemEvent == defaultDisplayResolutionChangeEventCopy) {
+		if (compare != *isDocked_shared) {
+			compare = *isDocked_shared;
+			return true;
+		}
+		return false;
 	}
-	return false;
+	else if (systemEvent == notificationMessageEventCopy) {
+		if (compare1 != *isDocked_shared) {
+			compare1 = *isDocked_shared;
+			return true;
+		}
+		else if (compare2 != *isDocked_shared) {
+			compare2 = *isDocked_shared;
+			return true;
+		}
+	}
+	return _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(systemEvent);
 }
 
 int main(int argc, char *argv[]) {
@@ -228,6 +251,7 @@ int main(int argc, char *argv[]) {
 			SaltySDCore_ReplaceImport("_ZN2nn2oe27GetDefaultDisplayResolutionEPiS1_", (void*)GetDefaultDisplayResolution);
 			SaltySDCore_ReplaceImport("_ZN2nn2oe38GetDefaultDisplayResolutionChangeEventEPNS_2os11SystemEventE", (void*)GetDefaultDisplayResolutionChangeEvent);
 			SaltySDCore_ReplaceImport("_ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE", (void*)TryWaitSystemEvent);
+			SaltySDCore_ReplaceImport("_ZN2nn2oe27GetNotificationMessageEventEv", (void*)GetNotificationMessageEvent);
 
 			SaltySDCore_printf("SaltySD ReverseNX-RT %s: injection finished correctly\n", ver);
 		}
