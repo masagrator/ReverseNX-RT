@@ -5,6 +5,11 @@
 #include "saltysd/SaltySD_dynamic.h"
 
 extern "C" {
+	struct SystemEvent {
+		const char reserved[16];
+		bool flag;
+	};
+
 	extern u32 __start__;
 
 	static char g_heap[0x4000];
@@ -18,6 +23,9 @@ extern "C" {
 	extern u8 _ZN2nn2oe16GetOperationModeEv() LINKABLE;
 	extern bool _ZN2nn2oe25TryPopNotificationMessageEPj (int &Message) LINKABLE;
 	extern int _ZN2nn2oe22PopNotificationMessageEv() LINKABLE;
+	extern void _ZN2nn2oe27GetDefaultDisplayResolutionEPiS1_(int* width, int* height) LINKABLE;
+	extern void _ZN2nn2oe38GetDefaultDisplayResolutionChangeEventEPNS_2os11SystemEventE(SystemEvent* systemEvent) LINKABLE;
+	extern bool _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(SystemEvent* systemEvent) LINKABLE;
 }
 
 u32 __nx_applet_type = AppletType_None;
@@ -33,6 +41,8 @@ const char* ver = "1.1";
 SharedMemory _sharedmemory = {};
 Handle remoteSharedMemory = 0;
 ptrdiff_t SharedMemoryOffset = -1;
+
+SystemEvent* systemEventCopy = 0;
 
 void __libnx_init(void* ctx, Handle main_thread, void* saved_lr) {
 	extern char* fake_heap_start;
@@ -149,6 +159,49 @@ uint8_t GetOperationMode() {
 	return *isDocked_shared;
 }
 
+void GetDefaultDisplayResolution(int* width, int* height) {
+	if (*def_shared) {
+		_ZN2nn2oe27GetDefaultDisplayResolutionEPiS1_(width, height);
+		if (*width == 1920) *isDocked_shared = true;
+		else *isDocked_shared = false;
+	}
+	else if (*isDocked_shared) {
+		*width = 1920;
+		*height = 1080;
+	}
+	else {
+		*width = 1280;
+		*height = 720;
+	}
+}
+
+void GetDefaultDisplayResolutionChangeEvent(SystemEvent* systemEvent) {
+	_ZN2nn2oe38GetDefaultDisplayResolutionChangeEventEPNS_2os11SystemEventE(systemEvent);
+	systemEventCopy = systemEvent;
+}
+
+bool TryWaitSystemEvent(SystemEvent* systemEvent) {
+	static bool check = true;
+	static bool compare = false;
+
+	if (systemEvent != systemEventCopy || *def_shared) {
+		bool ret = _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(systemEvent);
+		compare = *isDocked_shared;
+		if (!check) {
+			check = true;
+			return true;
+		}
+		return ret;
+	}
+	check = false;
+
+	if (compare != *isDocked_shared) {
+		compare = *isDocked_shared;
+		return true;
+	}
+	return false;
+}
+
 int main(int argc, char *argv[]) {
 	SaltySDCore_printf("ReverseNX-RT %s: alive\n", ver);
 	Result ret = SaltySD_CheckIfSharedMemoryAvailable(&SharedMemoryOffset, 7);
@@ -172,6 +225,10 @@ int main(int argc, char *argv[]) {
 			SaltySDCore_ReplaceImport("_ZN2nn2oe22PopNotificationMessageEv", (void*)PopNotificationMessage);
 			SaltySDCore_ReplaceImport("_ZN2nn2oe18GetPerformanceModeEv", (void*)GetPerformanceMode);
 			SaltySDCore_ReplaceImport("_ZN2nn2oe16GetOperationModeEv", (void*)GetOperationMode);
+			SaltySDCore_ReplaceImport("_ZN2nn2oe27GetDefaultDisplayResolutionEPiS1_", (void*)GetDefaultDisplayResolution);
+			SaltySDCore_ReplaceImport("_ZN2nn2oe38GetDefaultDisplayResolutionChangeEventEPNS_2os11SystemEventE", (void*)GetDefaultDisplayResolutionChangeEvent);
+			SaltySDCore_ReplaceImport("_ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE", (void*)TryWaitSystemEvent);
+
 			SaltySDCore_printf("SaltySD ReverseNX-RT %s: injection finished correctly\n", ver);
 		}
 		else {
