@@ -188,11 +188,6 @@ void GetDefaultDisplayResolutionChangeEvent(SystemEvent* systemEvent) {
 	defaultDisplayResolutionChangeEventCopy = systemEvent;
 }
 
-SystemEvent* GetNotificationMessageEvent() {
-	notificationMessageEventCopy = _ZN2nn2oe27GetNotificationMessageEventEv();
-	return notificationMessageEventCopy;
-}
-
 bool TryWaitSystemEvent(SystemEvent* systemEvent) {
 	static bool check = true;
 	static bool compare = false;
@@ -215,6 +210,11 @@ bool TryWaitSystemEvent(SystemEvent* systemEvent) {
 		return false;
 	}
 	return _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(systemEvent);
+}
+
+SystemEvent* GetNotificationMessageEvent() {
+	notificationMessageEventCopy = _ZN2nn2oe27GetNotificationMessageEventEv();
+	return notificationMessageEventCopy;
 }
 
 void InitializeMultiWaitHolder(void* MultiWaitHolderType, SystemEvent* systemEvent) {
