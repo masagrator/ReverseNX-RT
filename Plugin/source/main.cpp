@@ -1,8 +1,8 @@
 #include <switch_min.h>
 
-#include "saltysd/SaltySD_core.h"
-#include "saltysd/SaltySD_ipc.h"
-#include "saltysd/SaltySD_dynamic.h"
+#include "saltysd/saltysd_core.h"
+#include "saltysd/saltysd_ipc.h"
+#include "saltysd/saltysd_dynamic.h"
 
 extern "C" {
 	struct SystemEvent {
