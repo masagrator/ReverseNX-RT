@@ -27,6 +27,10 @@ extern "C" {
 	extern void _ZN2nn2oe38GetDefaultDisplayResolutionChangeEventEPNS_2os11SystemEventE(SystemEvent* systemEvent) LINKABLE;
 	extern bool _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(SystemEvent* systemEvent) LINKABLE;
 	extern SystemEvent* _ZN2nn2oe27GetNotificationMessageEventEv() LINKABLE;
+	extern void _ZN2nn2os25InitializeMultiWaitHolderEPNS0_19MultiWaitHolderTypeEPNS0_15SystemEventTypeE(void* MultiWaitHolderType, SystemEvent* systemEvent) LINKABLE;
+	extern void _ZN2nn2os19LinkMultiWaitHolderEPNS0_13MultiWaitTypeEPNS0_19MultiWaitHolderTypeE(void* MultiWaitType, void* MultiWaitHolderType) LINKABLE;
+	extern void* _ZN2nn2os7WaitAnyEPNS0_13MultiWaitTypeE(void* MultiWaitType) LINKABLE;
+	extern void* _ZN2nn2os12TimedWaitAnyEPNS0_13MultiWaitTypeENS_8TimeSpanE(void* MultiWaitType, u64 TimeSpan) LINKABLE;
 }
 
 u32 __nx_applet_type = AppletType_None;
@@ -37,7 +41,7 @@ void* orig_saved_lr;
 bool* def_shared = 0;
 bool* isDocked_shared = 0;
 bool* pluginActive_shared = 0;
-const char* ver = "1.1.1";
+const char* ver = "1.1.1-2";
 
 SharedMemory _sharedmemory = {};
 Handle remoteSharedMemory = 0;
@@ -45,6 +49,8 @@ ptrdiff_t SharedMemoryOffset = -1;
 
 SystemEvent* defaultDisplayResolutionChangeEventCopy = 0;
 SystemEvent* notificationMessageEventCopy = 0;
+void* multiWaitHolderCopy = 0;
+void* multiWaitCopy = 0;
 
 void __libnx_init(void* ctx, Handle main_thread, void* saved_lr) {
 	extern char* fake_heap_start;
@@ -211,6 +217,24 @@ bool TryWaitSystemEvent(SystemEvent* systemEvent) {
 	return _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(systemEvent);
 }
 
+void InitializeMultiWaitHolder(void* MultiWaitHolderType, SystemEvent* systemEvent) {
+	_ZN2nn2os25InitializeMultiWaitHolderEPNS0_19MultiWaitHolderTypeEPNS0_15SystemEventTypeE(MultiWaitHolderType, systemEvent);
+	if (systemEvent == notificationMessageEventCopy) 
+		multiWaitHolderCopy = MultiWaitHolderType;
+}
+
+void LinkMultiWaitHolder(void* MultiWaitType, void* MultiWaitHolderType) {
+	_ZN2nn2os19LinkMultiWaitHolderEPNS0_13MultiWaitTypeEPNS0_19MultiWaitHolderTypeE(MultiWaitType, MultiWaitHolderType);
+	if (MultiWaitHolderType == multiWaitHolderCopy)
+		multiWaitCopy = MultiWaitType;
+}
+
+void* WaitAny(void* MultiWaitType) {
+	if (multiWaitCopy != MultiWaitType)
+		return _ZN2nn2os7WaitAnyEPNS0_13MultiWaitTypeE(MultiWaitType);
+	return _ZN2nn2os12TimedWaitAnyEPNS0_13MultiWaitTypeENS_8TimeSpanE(MultiWaitType, 100000);
+}
+
 int main(int argc, char *argv[]) {
 	SaltySDCore_printf("ReverseNX-RT %s: alive\n", ver);
 	Result ret = SaltySD_CheckIfSharedMemoryAvailable(&SharedMemoryOffset, 7);
@@ -238,6 +262,9 @@ int main(int argc, char *argv[]) {
 			SaltySDCore_ReplaceImport("_ZN2nn2oe38GetDefaultDisplayResolutionChangeEventEPNS_2os11SystemEventE", (void*)GetDefaultDisplayResolutionChangeEvent);
 			SaltySDCore_ReplaceImport("_ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE", (void*)TryWaitSystemEvent);
 			SaltySDCore_ReplaceImport("_ZN2nn2oe27GetNotificationMessageEventEv", (void*)GetNotificationMessageEvent);
+			SaltySDCore_ReplaceImport("_ZN2nn2os25InitializeMultiWaitHolderEPNS0_19MultiWaitHolderTypeEPNS0_15SystemEventTypeE", (void*)InitializeMultiWaitHolder);
+			SaltySDCore_ReplaceImport("_ZN2nn2os19LinkMultiWaitHolderEPNS0_13MultiWaitTypeEPNS0_19MultiWaitHolderTypeE", (void*)LinkMultiWaitHolder);
+			SaltySDCore_ReplaceImport("_ZN2nn2os7WaitAnyEPNS0_13MultiWaitTypeE", (void*)WaitAny);
 
 			SaltySDCore_printf("SaltySD ReverseNX-RT %s: injection finished correctly\n", ver);
 		}
