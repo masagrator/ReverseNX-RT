@@ -190,14 +190,10 @@ SystemEvent* GetNotificationMessageEvent() {
 bool TryWaitSystemEvent(SystemEvent* systemEvent) {
 	static bool check = true;
 	static bool compare = false;
-	static bool compare1 = false;
-	static bool compare2 = false;
 
-	if ((systemEvent != defaultDisplayResolutionChangeEventCopy && systemEvent != notificationMessageEventCopy) || *def_shared) {
+	if (systemEvent != defaultDisplayResolutionChangeEventCopy || *def_shared) {
 		bool ret = _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(systemEvent);
 		compare = *isDocked_shared;
-		compare1 = *isDocked_shared;
-		compare2 = *isDocked_shared;
 		if (!check) {
 			check = true;
 			return true;
@@ -211,16 +207,6 @@ bool TryWaitSystemEvent(SystemEvent* systemEvent) {
 			return true;
 		}
 		return false;
-	}
-	else if (systemEvent == notificationMessageEventCopy) {
-		if (compare1 != *isDocked_shared) {
-			compare1 = *isDocked_shared;
-			return true;
-		}
-		else if (compare2 != *isDocked_shared) {
-			compare2 = *isDocked_shared;
-			return true;
-		}
 	}
 	return _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(systemEvent);
 }
