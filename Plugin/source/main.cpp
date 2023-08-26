@@ -194,7 +194,7 @@ bool TryWaitSystemEvent(SystemEvent* systemEvent) {
 	if (systemEvent != defaultDisplayResolutionChangeEventCopy || *def_shared) {
 		bool ret = _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(systemEvent);
 		compare = *isDocked_shared;
-		if (!check) {
+		if (systemEvent == defaultDisplayResolutionChangeEventCopy && !check) {
 			check = true;
 			return true;
 		}
