@@ -232,7 +232,7 @@ void LinkMultiWaitHolder(void* MultiWaitType, void* MultiWaitHolderType) {
 void* WaitAny(void* MultiWaitType) {
 	if (multiWaitCopy != MultiWaitType)
 		return _ZN2nn2os7WaitAnyEPNS0_13MultiWaitTypeE(MultiWaitType);
-	return _ZN2nn2os12TimedWaitAnyEPNS0_13MultiWaitTypeENS_8TimeSpanE(MultiWaitType, 100000);
+	return _ZN2nn2os12TimedWaitAnyEPNS0_13MultiWaitTypeENS_8TimeSpanE(MultiWaitType, 1000000);
 }
 
 int main(int argc, char *argv[]) {
