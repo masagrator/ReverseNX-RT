@@ -25,12 +25,12 @@ extern "C" {
 	extern int _ZN2nn2oe22PopNotificationMessageEv() LINKABLE;
 	extern void _ZN2nn2oe27GetDefaultDisplayResolutionEPiS1_(int* width, int* height) LINKABLE;
 	extern void _ZN2nn2oe38GetDefaultDisplayResolutionChangeEventEPNS_2os11SystemEventE(SystemEvent* systemEvent) LINKABLE;
-	extern bool _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(SystemEvent* systemEvent) LINKABLE;
+	extern bool nnosTryWaitSystemEvent(SystemEvent* systemEvent) LINKABLE;
 	extern SystemEvent* _ZN2nn2oe27GetNotificationMessageEventEv() LINKABLE;
-	extern void _ZN2nn2os25InitializeMultiWaitHolderEPNS0_19MultiWaitHolderTypeEPNS0_15SystemEventTypeE(void* MultiWaitHolderType, SystemEvent* systemEvent) LINKABLE;
-	extern void _ZN2nn2os19LinkMultiWaitHolderEPNS0_13MultiWaitTypeEPNS0_19MultiWaitHolderTypeE(void* MultiWaitType, void* MultiWaitHolderType) LINKABLE;
-	extern void* _ZN2nn2os7WaitAnyEPNS0_13MultiWaitTypeE(void* MultiWaitType) LINKABLE;
-	extern void* _ZN2nn2os12TimedWaitAnyEPNS0_13MultiWaitTypeENS_8TimeSpanE(void* MultiWaitType, u64 TimeSpan) LINKABLE;
+	extern void nnosInitializeMultiWaitHolderForSystemEvent(void* MultiWaitHolderType, SystemEvent* systemEvent) LINKABLE;
+	extern void nnosLinkMultiWaitHolder(void* MultiWaitType, void* MultiWaitHolderType) LINKABLE;
+	extern void* nnosWaitAny(void* MultiWaitType) LINKABLE;
+	extern void* nnosTimedWaitAny(void* MultiWaitType, u64 TimeSpan) LINKABLE;
 }
 
 u32 __nx_applet_type = AppletType_None;
@@ -193,7 +193,7 @@ bool TryWaitSystemEvent(SystemEvent* systemEvent) {
 	static bool compare = false;
 
 	if (systemEvent != defaultDisplayResolutionChangeEventCopy || *def_shared) {
-		bool ret = _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(systemEvent);
+		bool ret = nnosTryWaitSystemEvent(systemEvent);
 		compare = *isDocked_shared;
 		if (systemEvent == defaultDisplayResolutionChangeEventCopy && !check) {
 			check = true;
@@ -209,7 +209,7 @@ bool TryWaitSystemEvent(SystemEvent* systemEvent) {
 		}
 		return false;
 	}
-	return _ZN2nn2os18TryWaitSystemEventEPNS0_15SystemEventTypeE(systemEvent);
+	return nnosTryWaitSystemEvent(systemEvent);
 }
 
 SystemEvent* GetNotificationMessageEvent() {
@@ -218,21 +218,21 @@ SystemEvent* GetNotificationMessageEvent() {
 }
 
 void InitializeMultiWaitHolder(void* MultiWaitHolderType, SystemEvent* systemEvent) {
-	_ZN2nn2os25InitializeMultiWaitHolderEPNS0_19MultiWaitHolderTypeEPNS0_15SystemEventTypeE(MultiWaitHolderType, systemEvent);
+	nnosInitializeMultiWaitHolderForSystemEvent(MultiWaitHolderType, systemEvent);
 	if (systemEvent == notificationMessageEventCopy) 
 		multiWaitHolderCopy = MultiWaitHolderType;
 }
 
 void LinkMultiWaitHolder(void* MultiWaitType, void* MultiWaitHolderType) {
-	_ZN2nn2os19LinkMultiWaitHolderEPNS0_13MultiWaitTypeEPNS0_19MultiWaitHolderTypeE(MultiWaitType, MultiWaitHolderType);
+	nnosLinkMultiWaitHolder(MultiWaitType, MultiWaitHolderType);
 	if (MultiWaitHolderType == multiWaitHolderCopy)
 		multiWaitCopy = MultiWaitType;
 }
 
 void* WaitAny(void* MultiWaitType) {
 	if (multiWaitCopy != MultiWaitType)
-		return _ZN2nn2os7WaitAnyEPNS0_13MultiWaitTypeE(MultiWaitType);
-	return _ZN2nn2os12TimedWaitAnyEPNS0_13MultiWaitTypeENS_8TimeSpanE(MultiWaitType, 1000000);
+		return nnosWaitAny(MultiWaitType);
+	return nnosTimedWaitAny(MultiWaitType, 1000000);
 }
 
 int main(int argc, char *argv[]) {
