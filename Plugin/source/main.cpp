@@ -235,7 +235,7 @@ bool TryWaitSystemEvent(SystemEvent* systemEvent) {
 
 	Game won't check if mode was changed until NotificationMessage event will be flagged.
 	Functions below are detecting which MultiWait includes NotificationMessage event,
-	and for that MultiWait passed as argument to from nn::os::WaitAny it is redirected to nn::os::TimedWaitAny
+	and for that MultiWait passed as argument to nn::os::WaitAny it is redirected to nn::os::TimedWaitAny
 	with timeout set to 1ms so we can force game to check NotificationMessage every 1ms.
 
 	Almost all games are checking NotificationMessage in loops instead of waiting for event,
