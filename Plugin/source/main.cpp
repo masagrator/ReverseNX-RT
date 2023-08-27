@@ -170,7 +170,7 @@ uint8_t GetOperationMode() {
 /* 
 	Used by Red Dead Redemption.
 
-	Without using functions above it mode is detected by checking what is
+	Without using functions above, mode is detected by checking what is
 	default display resolution of currently running mode.
 	Those are:
 	Handheld - 1280x720
