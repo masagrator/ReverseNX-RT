@@ -167,6 +167,24 @@ uint8_t GetOperationMode() {
 	return *isDocked_shared;
 }
 
+/* 
+	Used by Red Dead Redemption.
+
+	Without using functions above it mode is detected by checking what is
+	default display resolution of currently running mode.
+	Those are:
+	Handheld - 1280x720
+	Docked - 1920x1080
+	
+	Game is waiting for DefaultDisplayResolutionChange event to check again
+	which mode is currently in use. And to do that nn::os::TryWaitSystemEvent is used
+	that is always returning flag without waiting for it to change.
+	
+	So solution is to replace flag returned by nn::os::TryWaitSystemEvent
+	when DefaultDisplayResolutionChange event is passed as argument,
+	and replace values written by nn::oe::GetDefaultDisplayResolution.
+
+*/
 void GetDefaultDisplayResolution(int* width, int* height) {
 	if (*def_shared) {
 		_ZN2nn2oe27GetDefaultDisplayResolutionEPiS1_(width, height);
@@ -211,6 +229,18 @@ bool TryWaitSystemEvent(SystemEvent* systemEvent) {
 	}
 	return nnosTryWaitSystemEvent(systemEvent);
 }
+
+/* 
+	Used by Monster Hunter Rise.
+
+	Game won't check if mode was changed until NotificationMessage event will be flagged.
+	Functions below are detecting which MultiWait includes NotificationMessage event,
+	and for that MultiWait passed as argument to from nn::os::WaitAny it is redirected to nn::os::TimedWaitAny
+	with timeout set to 1ms so we can force game to check NotificationMessage every 1ms.
+
+	Almost all games are checking NotificationMessage in loops instead of waiting for event,
+	so even though this is not a clean solution, it works and performance impact is negligible.
+*/
 
 SystemEvent* GetNotificationMessageEvent() {
 	notificationMessageEventCopy = _ZN2nn2oe27GetNotificationMessageEventEv();
