@@ -13,10 +13,9 @@ bool closed = false;
 bool check = false;
 bool SaltySD = false;
 bool bak = false;
-bool plugin = false;
+bool plugin = true;
 char DockedChar[32];
 char SystemChar[32];
-char PluginChar[36];
 uint64_t PID = 0;
 Handle remoteSharedMemory = 1;
 SharedMemory _sharedmemory = {};
@@ -89,9 +88,6 @@ public:
 			if (!SaltySD) {
 				renderer->drawString("SaltyNX is not working!", false, x, y+50, 20, renderer->a(0xF33F));
 			}
-			else if (!plugin) {
-				renderer->drawString("Can't detect ReverseNX-RT plugin!", false, x, y+50, 20, renderer->a(0xF33F));
-			}
 			else if (!check) {
 				if (closed) {
 					renderer->drawString("Game was closed! Overlay disabled!", false, x, y+20, 19, renderer->a(0xF33F));
@@ -99,15 +95,13 @@ public:
 				else {
 					renderer->drawString("Game is not running! Overlay disabled!", false, x, y+20, 19, renderer->a(0xF33F));
 				}
-				renderer->drawString(PluginChar, false, x, y+60, 20, renderer->a(0xFFFF));
 			}
 			else if (!PluginRunning) {
 				renderer->drawString("Game is running.", false, x, y+20, 20, renderer->a(0xFFFF));
 				renderer->drawString("ReverseNX-RT is not running!", false, x, y+40, 20, renderer->a(0xF33F));
-				renderer->drawString(PluginChar, false, x, y+60, 20, renderer->a(0xFFFF));
 			}
 			else {
-				renderer->drawString("ReverseNX-RT plugin is running.", false, x, y+20, 20, renderer->a(0xFFFF));
+				renderer->drawString("ReverseNX-RT is running.", false, x, y+20, 20, renderer->a(0xFFFF));
 				if (!*pluginActive) renderer->drawString("Game didn't check any mode!", false, x, y+40, 18, renderer->a(0xF33F));
 				else {
 					renderer->drawString(SystemChar, false, x, y+40, 20, renderer->a(0xFFFF));
@@ -139,27 +133,6 @@ public:
 				return false;
 			});
 			list->addItem(clickableListItem2);
-		}
-		else if (SaltySD && plugin && !check) {
-			auto *clickableListItem = new tsl::elm::ListItem("(De)activate plugin");
-			clickableListItem->setClickListener([](u64 keys) { 
-				if (keys & HidNpadButton_A) {
-					if (!bak) {
-						rename("sdmc:/SaltySD/plugins/ReverseNX-RT.elf", "sdmc:/SaltySD/plugins/ReverseNX-RT.elf.bak");
-						bak = true;
-						sprintf(PluginChar, "ReverseNX-RT plugin is activated.");
-					}
-					else {
-						rename("sdmc:/SaltySD/plugins/ReverseNX-RT.elf.bak", "sdmc:/SaltySD/plugins/ReverseNX-RT.elf");
-						bak = false;
-						sprintf(PluginChar, "ReverseNX-RT plugin is deactivated.");
-					}
-					return true;
-				}
-				
-				return false;
-			});
-			list->addItem(clickableListItem);
 		}
 
 		// Add the list to the frame for it to be drawn
@@ -212,23 +185,6 @@ public:
 			fsdevMountSdmc();
 			SaltySD = CheckPort();
 			if (!SaltySD) return;
-
-			FILE* temp = fopen("sdmc:/SaltySD/plugins/ReverseNX-RT.elf", "rb");
-			if (temp) {
-				fclose(temp);
-				plugin = true;
-				sprintf(PluginChar, "ReverseNX-RT plugin is activated.");
-			}
-			else {
-				temp = fopen("sdmc:/SaltySD/plugins/ReverseNX-RT.elf.bak", "rb");
-				if (temp) {
-					fclose(temp);
-					plugin = true;
-					bak = true;
-					sprintf(PluginChar, "ReverseNX-RT plugin is deactivated.");
-				}
-				else return;
-			}
 
 			if (R_FAILED(pmdmntGetApplicationProcessId(&PID))) return;
 			check = true;
