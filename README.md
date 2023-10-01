@@ -2,7 +2,7 @@
 
 Alternative version of ReverseNX that can switch between handheld and docked mode in **R**eal **T**ime.
 
-Requires SaltyNX 0.5.0+ and Tesla environment installed. Links at the end of readme.
+Requires SaltyNX 0.7.0+ and Tesla environment installed. Links at the end of readme.
 
 It's compatible with ReverseNX patches/ReverseNX-Tool 2.0.0+.
 
@@ -28,12 +28,6 @@ You have only two options here:
 Game stays in current configuration until you will close game.
 
 ---
-
-- When game is not running, SaltyNX is working and plugin is detected:
-
-![Menu](https://i.imgur.com/GDj60n3.jpg)
-
-You have option to (de)activate plugin from this menu. Deactivating it will result in renaming file so it will not be loaded by SaltyNX. Activating plugin renames to original filename.
 
 # Error notifications:
 - **SaltyNX is not working!** - SaltyNX crashed or is not installed correctly.
