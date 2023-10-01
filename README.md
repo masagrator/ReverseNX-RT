@@ -31,7 +31,6 @@ Game stays in current configuration until you will close game.
 
 # Error notifications:
 - **SaltyNX is not working!** - SaltyNX crashed or is not installed correctly.
-- **Can't detect ReverseNX-RT plugin!** - ReverseNX-RT plugin is not detected in sdcard SaltySD/plugins. Put plugin to correct folder without renaming it.
 - **Game was closed! Overlay disabled! Exit from overlay and run game first!** - If you were using overlay in last running game and closed game without closing overlay, you need to close overlay to use it again.
 - **ReverseNX-RT is not running!** - plugin was not injected. It's either 32-bit game or is in SaltyNX exceptions list.
 - **Game doesn't support changing modes!** - plugin was injected and is working, but function for checking modes was not used. Either game doesn't have one (which means there is no difference between handheld and docked) or game just checks it later than when you wanted to check (for example game may not use it for few seconds after booting was finished). You need to exit from overlay and run it again later to check if error still occurs...
