@@ -38,7 +38,7 @@ include $(DEVKITPRO)/libnx/switch_rules
 #   NACP building is skipped as well.
 #---------------------------------------------------------------------------------
 APP_TITLE	:=	ReverseNX-RT
-APP_VERSION	:=	1.1.1
+APP_VERSION	:=	2.0.0
 
 TARGET		:=	ReverseNX-RT-ovl
 BUILD		:=	build
