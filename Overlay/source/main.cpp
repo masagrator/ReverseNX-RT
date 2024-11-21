@@ -1,6 +1,7 @@
 #define TESLA_INIT_IMPL // If you have more than one file using the tesla header, only define this in the main one
 #include <tesla.hpp>    // The Tesla Header
 #include "SaltyNX.h"
+#include <dirent.h>
 
 bool* def = 0;
 bool* isDocked = 0;
@@ -14,12 +15,41 @@ bool check = false;
 bool SaltySD = false;
 bool bak = false;
 bool plugin = true;
+char saveChar[32];
 char DockedChar[32];
 char SystemChar[32];
 uint64_t PID = 0;
 Handle remoteSharedMemory = 1;
 SharedMemory _sharedmemory = {};
 bool SharedMemoryUsed = false;
+
+bool writeSave() {
+	uint64_t titid = 0;
+	if (R_FAILED(pmdmntGetProgramId(&titid, PID))) {
+		return false;
+	}
+	char path[128];
+	DIR* dir = opendir("sdmc:/SaltySD/plugins/ReverseNX-RT/");
+	if (!dir) {
+		mkdir("sdmc:/SaltySD/plugins/", 777);
+		mkdir("sdmc:/SaltySD/plugins/ReverseNX-RT/", 777);
+	}
+	else closedir(dir);
+	snprintf(path, sizeof(path), "sdmc:/SaltySD/plugins/ReverseNX-RT/%016lX.dat", titid);
+	if (_def) {
+		remove(path);
+		return true;
+	}
+	FILE* save_file = fopen(path, "wb");
+	if (!save_file)
+		return false;
+	fprintf(save_file, "NXRT");
+	uint8_t version = 1;
+	fwrite(&version, 1, 1, save_file);
+	fwrite(&_isDocked, 1, 1, save_file);
+	fclose(save_file);
+	return true;
+}
 
 bool LoadSharedMemory() {
 	if (SaltySD_Connect())
@@ -107,8 +137,9 @@ public:
 					renderer->drawString(SystemChar, false, x, y+40, 20, renderer->a(0xFFFF));
 					renderer->drawString(DockedChar, false, x, y+60, 20, renderer->a(0xFFFF));
 				}
+				renderer->drawString(saveChar, false, x, y+80, 20, renderer->a(0xFFFF));
 			}
-	}), 100);
+	}), 120);
 
 		if (PluginRunning && *pluginActive) {
 			auto *clickableListItem = new tsl::elm::ListItem("Change system control");
@@ -116,6 +147,7 @@ public:
 				if ((keys & HidNpadButton_A) && PluginRunning) {
 					_def = !_def;
 					*def = _def;
+					return true;
 				}
 
 				return false;
@@ -128,11 +160,25 @@ public:
 				if ((keys & HidNpadButton_A) && PluginRunning && !_def) {
 					_isDocked = !_isDocked;
 					*isDocked = _isDocked;
+					return true;
 				}
 				
 				return false;
 			});
 			list->addItem(clickableListItem2);
+
+			auto *clickableListItem3 = new tsl::elm::ListItem("Save current settings");
+			clickableListItem3->setClickListener([](u64 keys) { 
+				if ((keys & HidNpadButton_A) && PluginRunning) {
+					if (writeSave())
+						snprintf(saveChar, sizeof(saveChar), "Settings saved successfully!");
+					else snprintf(saveChar, sizeof(saveChar), "Saving settings failed!");
+					return true;
+				}
+				
+				return false;
+			});
+			list->addItem(clickableListItem3);
 		}
 
 		// Add the list to the frame for it to be drawn
