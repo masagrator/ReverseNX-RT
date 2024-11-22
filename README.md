@@ -42,7 +42,6 @@ List of titles having compability issues with ReverseNX-RT:
 | Title | Versions | Why? |
 | ------------- | ------------- | ------------- |
 | Robotics;Notes Elite | 1.0.1 | Broken PopNotificationMessage() thread, not working at all |
-| The Legend of Zelda: Echoes of Wisdom | 1.0.1 | It's using the same method as Monster Hunter Rise, but it's more picky about returns and couldn't figure out yet how to fix this |
 
 Q: Often when I'm closing game, Atmosphere crashes with error 0x41001. Why?
 
