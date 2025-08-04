@@ -23,9 +23,12 @@ Overlay contains multiple modes, from which 2 are main ones, other are error not
 
 You have only two options here:
 * Change system control (It also refers to ReverseNX-Tool flags - f.e. if you have docked flag set for this game in ReverseNX-Tool, when system control is enabled, it will force docked mode)
-* Change mode (disabled if system control is enabled)
+* Change mode (doesn't show up if system control is enabled)
+* Change Handheld DDR
+* Change Docked DDR
+* Save settings
 
-Game stays in current configuration until you will close game.
+Some games utilize Default Display Resolution to set game's output resolution. List of compatible games is at the bottom of README.
 
 ---
 
@@ -52,3 +55,8 @@ A: Atmosphere 0.12.0 with new options for cheat engine bringed bug that causes s
 - https://github.com/masagrator/SaltyNX/releases
 - https://github.com/WerWolv/nx-ovlloader
 - https://github.com/WerWolv/Tesla-Menu
+
+# List of DDR games
+| Title | Confirmed versions | Only Docked/Only Handheld/Both |
+| ------------- | ------------- | ------------- |
+| Card-en-Ciel | 1.5.3 | Both |
