@@ -60,3 +60,4 @@ A: Atmosphere 0.12.0 with new options for cheat engine bringed bug that causes s
 | Title | Confirmed versions | Only Docked/Only Handheld/Both |
 | ------------- | ------------- | ------------- |
 | Card-en-Ciel | 1.5.3 | Both |
+| CelDamage HD | 1.0.0 | Both |
