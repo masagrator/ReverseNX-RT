@@ -38,6 +38,7 @@ Some games utilize Default Display Resolution to set game's output resolution. L
 - **ReverseNX-RT is not running!** - plugin was not injected. It's either 32-bit game or is in SaltyNX exceptions list.
 - **Game doesn't support changing modes!** - plugin was injected and is working, but function for checking modes was not used. Either game doesn't have one (which means there is no difference between handheld and docked) or game just checks it later than when you wanted to check (for example game may not use it for few seconds after booting was finished). You need to exit from overlay and run it again later to check if error still occurs...
 - **WRONG MAGIC!** - something went horribly wrong and overlay is reading value from wrong memory position. It should not happen if you are opening overlay after game boot process will finish. It may also happen if you will close overlay before closing game and open it after running next game, this time not compatible with SaltyNX.
+- **Defauly Display Resolution was not checked!** - if it shows up, it means you won't have access to `Change Handheld DDR` and `Change Docked DDR` since resolutions are hardcoded.
 
 # Troubleshooting:
 List of titles having compability issues with ReverseNX-RT:
