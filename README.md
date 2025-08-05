@@ -2,9 +2,9 @@
 
 Alternative version of ReverseNX that can switch between handheld and docked mode in **R**eal **T**ime.
 
-Requires SaltyNX 0.7.0+ and Tesla environment installed. Links at the end of readme.
+Requires SaltyNX 1.4.3+ and Tesla environment installed. Links at the end of readme.
 
-It's compatible with ReverseNX patches/ReverseNX-Tool 2.0.0+.
+It's compatible with ReverseNX patches/ReverseNX-Tool 2.0.0+ as long as you don't plan to override Default Display Resolution (DDR) in ReverseNX-RT.
 
 It's not compatible with deprecated ReverseNX plugin.
 
@@ -24,8 +24,8 @@ Overlay contains multiple modes, from which 2 are main ones, other are error not
 You have only two options here:
 * Change system control (It also refers to ReverseNX-Tool flags - f.e. if you have docked flag set for this game in ReverseNX-Tool, when system control is enabled, it will force docked mode)
 * Change mode (doesn't show up if system control is enabled)
-* Change Handheld DDR
-* Change Docked DDR
+* Change Handheld DDR (doesn't show up if system control is enabled and if game didn't use GetDefaultDisplayResolution even once)
+* Change Docked DDR (doesn't show up if system control is enabled and if game didn't use GetDefaultDisplayResolution even once)
 * Save settings
 
 Some games utilize Default Display Resolution to set game's output resolution. List of compatible games is at the bottom of README.
