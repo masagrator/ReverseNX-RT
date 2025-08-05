@@ -57,7 +57,7 @@ A: Atmosphere 0.12.0 with new options for cheat engine bringed bug that causes s
 - https://github.com/WerWolv/nx-ovlloader
 - https://github.com/WerWolv/Tesla-Menu
 
-# List of DDR games
+# List of known DDR games
 | Title | Confirmed versions | Only Docked/Only Handheld/Both |
 | ------------- | ------------- | ------------- |
 | Card-en-Ciel | 1.5.3 | Both |
