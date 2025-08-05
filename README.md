@@ -65,4 +65,5 @@ A: Atmosphere 0.12.0 with new options for cheat engine bringed bug that causes s
 | EA SPORTS FC 24 | 1.5a.9115 | Only Docked | If anything else than 1080p is set, game targets 720p |
 | EA SPORTS FC 25 | 1.7d.c638 | Only Docked | If anything else than 1080p is set, game targets 720p |
 | Flooded | 1.0.1 | Both |  |
+| Gal*Gun Returns | 1.0.4 | Both |  |
 | Red Dead Redemption | 1.0.4 | Both |  |
