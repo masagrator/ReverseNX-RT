@@ -1,6 +1,0 @@
-[submodule "Overlay/libs/libtesla"]
-	path = Overlay/libs/libtesla
-	url = https://github.com/WerWolv/libtesla
-[submodule "Overlay/libs/Atmosphere-libs"]
-	path = Overlay/libs/Atmosphere-libs
-	url = https://github.com/Atmosphere-NX/Atmosphere-libs
