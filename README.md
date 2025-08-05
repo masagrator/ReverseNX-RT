@@ -28,7 +28,8 @@ You have only two options here:
 * Change Docked DDR (doesn't show up if system control is enabled and if game didn't use GetDefaultDisplayResolution even once)
 * Save settings
 
-Some games utilize Default Display Resolution to set game's output resolution. List of known compatible games can be found [HERE](https://github.com/masagrator/ReverseNX-RT/blob/compatible_games/README.md). Some games may use that function, but do nothing with the result (For example `Dragon Ball: Xenoverse 2`)
+> DDR
+Some games utilize Default Display Resolution (DDR) to set game's output resolution. List of known compatible games can be found [HERE](https://github.com/masagrator/ReverseNX-RT/blob/compatible_games/README.md). Some games may use that function, but do nothing with the result (For example `Dragon Ball: Xenoverse 2`)
 
 ---
 
