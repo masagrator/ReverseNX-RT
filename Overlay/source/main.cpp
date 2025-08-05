@@ -144,6 +144,13 @@ public:
 		// A list that can contain sub elements and handles scrolling
 		auto list = new tsl::elm::List();
 
+		list->addItem(new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
+			renderer->drawString("In almost all games this", false, x, y+20, 20, renderer->a(0xF99F));
+			renderer->drawString("will have no effect. Check", false, x, y+42, 20, renderer->a(0xF99F));
+			renderer->drawString("ReverseNX-RT readme for the list", false, x, y+64, 20, renderer->a(0xF99F));
+			renderer->drawString("of known compatible games.", false, x, y+86, 20, renderer->a(0xF99F));
+		}), 110);
+
 		auto *clickableListItem2 = new tsl::elm::ListItem("Default");
 		clickableListItem2->setClickListener([this](u64 keys) { 
 			if ((keys & HidNpadButton_A) && PluginRunning) {
