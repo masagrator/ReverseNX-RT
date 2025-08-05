@@ -41,6 +41,7 @@ struct resolutionMode {
 	res_mode handheld_res: 4;
 	res_mode docked_res: 4;
 } PACKED;
+bool* _wasDDRused = 0;
 
 resolutionMode* res_mode_ptr = 0;
 
@@ -144,13 +145,6 @@ public:
 		// A list that can contain sub elements and handles scrolling
 		auto list = new tsl::elm::List();
 
-		list->addItem(new tsl::elm::CustomDrawer([](tsl::gfx::Renderer *renderer, s32 x, s32 y, s32 w, s32 h) {
-			renderer->drawString("In almost all games this", false, x, y+20, 20, renderer->a(0xF99F));
-			renderer->drawString("will have no effect. Check", false, x, y+42, 20, renderer->a(0xF99F));
-			renderer->drawString("ReverseNX-RT readme for the list", false, x, y+64, 20, renderer->a(0xF99F));
-			renderer->drawString("of known compatible games.", false, x, y+86, 20, renderer->a(0xF99F));
-		}), 110);
-
 		auto *clickableListItem2 = new tsl::elm::ListItem("Default");
 		clickableListItem2->setClickListener([this](u64 keys) { 
 			if ((keys & HidNpadButton_A) && PluginRunning) {
@@ -233,8 +227,14 @@ public:
 					renderer->drawString(SystemChar, false, x, y+42, 20, renderer->a(0xFFFF));
 					renderer->drawString(DockedChar, false, x, y+64, 20, renderer->a(0xFFFF));
 					if (!*def) {
-						renderer->drawString(HandheldDDR, false, x, y+86, 20, renderer->a(0xFFFF));
-						renderer->drawString(DockedDDR, false, x, y+108, 20, renderer->a(0xFFFF));
+						if (*_wasDDRused) {
+							renderer->drawString(HandheldDDR, false, x, y+86, 20, renderer->a(0xFFFF));
+							renderer->drawString(DockedDDR, false, x, y+108, 20, renderer->a(0xFFFF));
+						}
+						else {
+							renderer->drawString("Default Display Resolution", false, x, y+86, 20, renderer->a(0xFFFF));
+							renderer->drawString("was not checked!", false, x, y+108, 20, renderer->a(0xFFFF));							
+						}
 					}
 				}
 				renderer->drawString(saveChar, false, x, y+130, 20, renderer->a(0xFFFF));
@@ -270,27 +270,29 @@ public:
 				});
 				list->addItem(clickableListItem2);
 
-				auto *clickableListItem3 = new tsl::elm::ListItem("Change Handheld DDR");
-				clickableListItem3->setClickListener([](u64 keys) { 
-					if ((keys & HidNpadButton_A) && PluginRunning) {
-						tsl::changeTo<ResolutionModeMenu>(false);
-						return true;
-					}
-					
-					return false;
-				});
-				list->addItem(clickableListItem3);
+				if (*_wasDDRused) {
+					auto *clickableListItem3 = new tsl::elm::ListItem("Change Handheld DDR");
+					clickableListItem3->setClickListener([](u64 keys) { 
+						if ((keys & HidNpadButton_A) && PluginRunning) {
+							tsl::changeTo<ResolutionModeMenu>(false);
+							return true;
+						}
+						
+						return false;
+					});
+					list->addItem(clickableListItem3);
 
-				auto *clickableListItem4 = new tsl::elm::ListItem("Change Docked DDR");
-				clickableListItem4->setClickListener([](u64 keys) { 
-					if ((keys & HidNpadButton_A) && PluginRunning) {
-						tsl::changeTo<ResolutionModeMenu>(true);
-						return true;
-					}
-					
-					return false;
-				});
-				list->addItem(clickableListItem4);
+					auto *clickableListItem4 = new tsl::elm::ListItem("Change Docked DDR");
+					clickableListItem4->setClickListener([](u64 keys) { 
+						if ((keys & HidNpadButton_A) && PluginRunning) {
+							tsl::changeTo<ResolutionModeMenu>(true);
+							return true;
+						}
+						
+						return false;
+					});
+					list->addItem(clickableListItem4);
+				}
 			}
 
 			auto *clickableListItem3 = new tsl::elm::ListItem("Save current settings");
@@ -405,6 +407,7 @@ public:
 					def = (bool*)(base + rel_offset + 5);
 					pluginActive = (bool*)(base + rel_offset + 6);
 					res_mode_ptr = (resolutionMode*)(base + rel_offset + 7);
+					_wasDDRused = (bool*)(base + rel_offset + 8);
 					PluginRunning = true;
 				}		
 			}
