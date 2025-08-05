@@ -29,6 +29,7 @@ You have only two options here:
 * Save settings
 
 > DDR
+
 Some games utilize Default Display Resolution (DDR) to set game's output resolution. List of known compatible games can be found [HERE](https://github.com/masagrator/ReverseNX-RT/blob/compatible_games/README.md). Some games may use that function, but do nothing with the result (For example `Dragon Ball: Xenoverse 2`)
 
 ---
