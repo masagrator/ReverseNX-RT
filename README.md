@@ -4,7 +4,7 @@ Alternative version of ReverseNX that can switch between handheld and docked mod
 
 Requires SaltyNX 1.4.3+ and Tesla environment installed. Links at the end of readme.
 
-It's compatible with ReverseNX patches/ReverseNX-Tool 2.0.0+ as long as you don't plan to override Default Display Resolution (DDR) in ReverseNX-RT.
+It's compatible with ReverseNX patches/ReverseNX-Tool 2.0.0+.
 
 It's not compatible with deprecated ReverseNX plugin.
 
