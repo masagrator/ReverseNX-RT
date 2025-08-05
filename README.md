@@ -28,7 +28,7 @@ You have only two options here:
 * Change Docked DDR (doesn't show up if system control is enabled and if game didn't use GetDefaultDisplayResolution even once)
 * Save settings
 
-Some games utilize Default Display Resolution to set game's output resolution. List of known compatible games is at the bottom of README. Some games may use that function, but do nothing with the result (For example `Dragon Ball: Xenoverse 2`)
+Some games utilize Default Display Resolution to set game's output resolution. List of known compatible games can be found [HERE](tree/compatible_games). Some games may use that function, but do nothing with the result (For example `Dragon Ball: Xenoverse 2`)
 
 ---
 
@@ -56,14 +56,3 @@ A: Atmosphere 0.12.0 with new options for cheat engine bringed bug that causes s
 - https://github.com/masagrator/SaltyNX/releases
 - https://github.com/WerWolv/nx-ovlloader
 - https://github.com/WerWolv/Tesla-Menu
-
-# List of known DDR games
-| Title | Tested version | Only Docked/Only Handheld/Both | Comments |
-| ------------- | ------------- | ------------- | ------------- |
-| Card-en-Ciel | 1.5.3 | Both |  |
-| CelDamage HD | 1.0.0 | Both |  |
-| EA SPORTS FC 24 | 1.5a.9115 | Only Docked | If anything else than 1080p is set, game targets 720p |
-| EA SPORTS FC 25 | 1.7d.c638 | Only Docked | If anything else than 1080p is set, game targets 720p |
-| Flooded | 1.0.1 | Both |  |
-| Gal*Gun Returns | 1.0.4 | Both |  |
-| Red Dead Redemption | 1.0.4 | Both |  |
