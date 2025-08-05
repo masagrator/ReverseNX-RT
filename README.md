@@ -1,6 +1,6 @@
 # List of known DDR games
 | Title | TitleID | Tested version | Only Docked/Only Handheld/Both | Comments |
-| ------------- | ------------- | ------------- | ------------- |
+| ------------- | ------------- | ------------- | ------------- | ------------- |
 | Card-en-Ciel | 0100E6B01BD3A000 | 1.5.3 | Both |  |
 | Cel Damage HD | 010019B00BE72000 | 1.0.0 | Both |  |
 | EA SPORTS FC 24 | 0100BDB01A0E6000 | 1.5a.9115 | Only Docked | If anything else than 1080p is set, game targets 720p |
