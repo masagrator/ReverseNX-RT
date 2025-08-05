@@ -58,8 +58,9 @@ A: Atmosphere 0.12.0 with new options for cheat engine bringed bug that causes s
 - https://github.com/WerWolv/Tesla-Menu
 
 # List of known DDR games
-| Title | Confirmed versions | Only Docked/Only Handheld/Both |
-| ------------- | ------------- | ------------- |
-| Card-en-Ciel | 1.5.3 | Both |
-| CelDamage HD | 1.0.0 | Both |
-| Red Dead Redemption | 1.0.4 | Both |
+| Title | Confirmed versions | Only Docked/Only Handheld/Both | Comments |
+| ------------- | ------------- | ------------- | ------------- |
+| Card-en-Ciel | 1.5.3 | Both |  |
+| CelDamage HD | 1.0.0 | Both |  |
+| Red Dead Redemption | 1.0.4 | Both |  |
+| EA SPORTS FC 24 | 1.5a.9115 | Only Docked | If anything else than 1080p is set, game targets 720p |
