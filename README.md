@@ -11,4 +11,5 @@
 | Gex Trilogy | `01007CC0228D0000` | 1.0.2 | Both |  |
 | Hero's Hour | `010005E01E5E6000` | 2.5.3 | Both |  |
 | Hitman: Blood Money - Reprisal | `010083A018262000` | 1.2_71586 | Both | Anything lower than 720p targets 1280x720 |
+| Horizon Chase 2 | `0100001019F6E000` | 1.6.9 | Both |  |
 | Red Dead Redemption | `01007820196A6000` | 1.0.4 | Both |  |
