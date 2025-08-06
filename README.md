@@ -13,8 +13,9 @@
 | Hero's Hour | `010005E01E5E6000` | 2.5.3 | Both |  |
 | Hitman: Blood Money - Reprisal | `010083A018262000` | 1.2_71586 | Both | Anything lower than 720p targets 1280x720 |
 | Horizon Chase 2 | `0100001019F6E000` | 1.6.9 | Both |  |
+| Lara Croft and the Guardian of Light | `010079C017F5E002` | 1.1_65791 | Both | Anything lower than 720p targets 1280x720 |
+| Lara Croft and the Temple of Osiris | `010079C017F5E001` | 1.1_65791 | Both | Anything lower than 720p targets 1280x720 |
 | Penny's Big Breakaway | `0100CA901AA9C000` | 1.2.0 | Both |  |
 | Pizza Tower | `01006C601C5EC000` | 1.0.2 | Both |  |
 | Red Dead Redemption | `01007820196A6000` | 1.0.4 | Both |  |
-| Lara Croft and the Guardian of Light | `010079C017F5E002` | 1.1_65791 | Both | Anything lower than 720p targets 1280x720 |
-| Lara Croft and the Temple of Osiris | `010079C017F5E001` | 1.1_65791 | Both | Anything lower than 720p targets 1280x720 |
+| Teenage Mutant Ninja Turtles: Splintered Fate | `01005CF01E784000` | 1.10.0 | Both |  |
