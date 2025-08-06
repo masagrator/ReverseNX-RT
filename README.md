@@ -8,4 +8,5 @@
 | EA SPORTS FC 25 | `010054E01D878000` | 1.7d.c638 | Only Docked | If anything else than 1080p is set, game targets 720p |
 | Flooded | `010022201D254000` | 1.0.1 | Both |  |
 | Gal*Gun Returns | `0100047013378000` | 1.0.4 | Both |  |
+| Hitman: Blood Money - Reprisal | `010083A018262000` | 1.2_71586 | Both | Anything lower than 1280x720 targets 1280x720 |
 | Red Dead Redemption | `01007820196A6000` | 1.0.4 | Both |  |
