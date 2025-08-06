@@ -13,4 +13,5 @@
 | Hero's Hour | `010005E01E5E6000` | 2.5.3 | Both |  |
 | Hitman: Blood Money - Reprisal | `010083A018262000` | 1.2_71586 | Both | Anything lower than 720p targets 1280x720 |
 | Horizon Chase 2 | `0100001019F6E000` | 1.6.9 | Both |  |
+| Penny's Big Breakaway | `0100CA901AA9C000` | 1.2.0 | Both |   |
 | Red Dead Redemption | `01007820196A6000` | 1.0.4 | Both |  |
