@@ -16,3 +16,5 @@
 | Penny's Big Breakaway | `0100CA901AA9C000` | 1.2.0 | Both |  |
 | Pizza Tower | `01006C601C5EC000` | 1.0.2 | Both |  |
 | Red Dead Redemption | `01007820196A6000` | 1.0.4 | Both |  |
+| Lara Croft and the Guardian of Light | `010079C017F5E002` | 1.1_65791 | Both | Anything lower than 720p targets 1280x720 |
+| Lara Croft and the Temple of Osiris | `010079C017F5E001` | 1.1_65791 | Both | Anything lower than 720p targets 1280x720 |
