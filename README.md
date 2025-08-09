@@ -16,6 +16,7 @@
 | Hero's Hour | `01005200216A0000` | 1.1.0 | Both |  |
 | Hitman: Blood Money - Reprisal | `010083A018262000` | 1.2_71586 | Both | Anything lower than 720p targets 1280x720 |
 | Horizon Chase 2 | `0100001019F6E000` | 1.6.9 | Both |  |
+| Metal Gear Solid | `010033301A9C0000` | 1.5.0 | Only Docked | Trying to set anything else than 1920x1080, 1280x720 or 854x480 results in 1920x1080 output, for some reason setting 854x480 results in 720x405 image |
 | The Lara Croft Collection | `010079C017F5E001`<br>`010079C017F5E002` | 1.1_65791 | Both | Anything lower than 720p targets 1280x720 |
 | Penny's Big Breakaway | `0100CA901AA9C000` | 1.2.0 | Both |  |
 | Pizza Tower | `01006C601C5EC000` | 1.0.2 | Both |  |
