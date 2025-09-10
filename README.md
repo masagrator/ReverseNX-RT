@@ -1,6 +1,7 @@
 # List of known DDR games
 | Title | TitleID | Tested version | Only Docked/Only Handheld/Both | Comments |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
+| Alien Isolation | `010075D00E8BA000` | 1.1.5_64113 | Both | Anything lower than 720p targets 1280x720 |
 | Balatro | `0100CD801CE5E000` | 1.1.3 | Both |  |
 | Card-en-Ciel | `0100E6B01BD3A000` | 1.5.3 | Both |  |
 | Cel Damage HD | `010019B00BE72000` | 1.0.0 | Both |  |
