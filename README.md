@@ -28,6 +28,8 @@ You have only two options here:
 Additional settings if it's detected that it can be compatible:
 * Change Handheld DDR (doesn't show up if system control is enabled and if game didn't use GetDefaultDisplayResolution even once)
 * Change Docked DDR (doesn't show up if system control is enabled and if game didn't use GetDefaultDisplayResolution even once)
+
+And last option:
 * Save settings
 
 > DDR
