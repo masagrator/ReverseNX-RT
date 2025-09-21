@@ -25,11 +25,11 @@ You have only two options here:
 * Change system control (It also refers to ReverseNX-Tool flags - f.e. if you have docked flag set for this game in ReverseNX-Tool, when system control is enabled, it will force docked mode)
 * Change mode (doesn't show up if system control is enabled)
 
-Additional settings if it's detected that it can be compatible:
+Additional options if it's detected that they can be compatible:
 * Change Handheld DDR (doesn't show up if system control is enabled and if game didn't use GetDefaultDisplayResolution even once)
 * Change Docked DDR (doesn't show up if system control is enabled and if game didn't use GetDefaultDisplayResolution even once)
 
-And last option:
+And:
 * Save settings
 
 > DDR
