@@ -3,9 +3,6 @@
 #include "SaltyNX.h"
 #include <dirent.h>
 
-bool* def = 0;
-bool* isDocked = 0;
-bool* pluginActive = 0;
 bool _isDocked = false;
 bool _def = true;
 bool PluginRunning = false;
@@ -37,15 +34,23 @@ enum res_mode {
 	res_mode_amount = 8
 };
 
-struct resolutionMode {
-	res_mode handheld_res: 4;
-	res_mode docked_res: 4;
-} PACKED;
-bool* _wasDDRused = 0;
-
-resolutionMode* res_mode_ptr = 0;
-
 std::pair<int, int> resolutions[] = {{0 ,0}, {854, 480}, {960, 540}, {1120, 630}, {1280, 720}, {1440, 810}, {1600, 900}, {1920, 1080}};
+
+struct Shared {
+	uint32_t MAGIC;
+	bool isDocked;
+	bool def;
+	bool pluginActive;
+	struct {
+		res_mode handheld_res: 4;
+		res_mode docked_res: 4;
+	} NX_PACKED res;
+	bool wasDDRused;
+} NX_PACKED;
+
+static_assert(sizeof(Shared) == 9);
+
+Shared* ReverseNX_RT;
 
 bool writeSave() {
 	uint64_t titid = 0;
@@ -71,8 +76,8 @@ bool writeSave() {
 	uint8_t version = 2;
 	fwrite(&version, 1, 1, save_file);
 	fwrite(&_isDocked, 1, 1, save_file);
-	uint8_t resolutionModeH = (uint8_t)(res_mode_ptr->handheld_res);
-	uint8_t resolutionModeD = (uint8_t)(res_mode_ptr->docked_res);
+	uint8_t resolutionModeH = (uint8_t)(ReverseNX_RT->res.handheld_res);
+	uint8_t resolutionModeD = (uint8_t)(ReverseNX_RT->res.docked_res);
 	fwrite(&resolutionModeH, 1, 1, save_file);
 	fwrite(&resolutionModeD, 1, 1, save_file);
 	fclose(save_file);
@@ -148,8 +153,8 @@ public:
 		auto *clickableListItem2 = new tsl::elm::ListItem("Default");
 		clickableListItem2->setClickListener([this](u64 keys) { 
 			if ((keys & HidNpadButton_A) && PluginRunning) {
-				if (_isDocked) res_mode_ptr->docked_res = res_mode_default;
-				else res_mode_ptr->handheld_res = res_mode_default;
+				if (_isDocked) ReverseNX_RT->res.docked_res = res_mode_default;
+				else ReverseNX_RT->res.handheld_res = res_mode_default;
 				tsl::goBack();
 				return true;
 			}
@@ -164,8 +169,8 @@ public:
 			auto *clickableListItem = new tsl::elm::ListItem(Hz);
 			clickableListItem->setClickListener([this, i](u64 keys) { 
 				if ((keys & HidNpadButton_A) && PluginRunning) {
-					if (_isDocked) res_mode_ptr->docked_res = (res_mode)i;
-					else res_mode_ptr->handheld_res = (res_mode)i;
+					if (_isDocked) ReverseNX_RT->res.docked_res = (res_mode)i;
+					else ReverseNX_RT->res.handheld_res = (res_mode)i;
 					tsl::goBack();
 					return true;
 				}
@@ -222,12 +227,12 @@ public:
 			}
 			else {
 				renderer->drawString("ReverseNX-RT is running.", false, x, y+20, 20, renderer->a(0xFFFF));
-				if (!*pluginActive) renderer->drawString("Game didn't check any mode!", false, x, y+40, 18, renderer->a(0xF33F));
+				if (!(ReverseNX_RT->pluginActive)) renderer->drawString("Game didn't check any mode!", false, x, y+40, 18, renderer->a(0xF33F));
 				else {
 					renderer->drawString(SystemChar, false, x, y+42, 20, renderer->a(0xFFFF));
 					renderer->drawString(DockedChar, false, x, y+64, 20, renderer->a(0xFFFF));
-					if (!*def) {
-						if (*_wasDDRused) {
+					if (!(ReverseNX_RT->def)) {
+						if (ReverseNX_RT->wasDDRused) {
 							renderer->drawString(HandheldDDR, false, x, y+86, 20, renderer->a(0xFFFF));
 							renderer->drawString(DockedDDR, false, x, y+108, 20, renderer->a(0xFFFF));
 						}
@@ -241,12 +246,12 @@ public:
 			}
 	}), 150);
 
-		if (PluginRunning && *pluginActive) {
+		if (PluginRunning && ReverseNX_RT->pluginActive) {
 
 			auto *clickableListItem = new tsl::elm::ListItem("Change system control");
 			clickableListItem->setClickListener([](u64 keys) { 
 				if ((keys & HidNpadButton_A) && PluginRunning) {
-					*def = !*def;
+					ReverseNX_RT->def = !(ReverseNX_RT->def);
 					tsl::goBack();
 					tsl::changeTo<GuiTest>(1, 2, true);
 					return true;
@@ -257,12 +262,12 @@ public:
 
 			list->addItem(clickableListItem);
 
-			if (!*def) {
+			if (!(ReverseNX_RT->def)) {
 
 				auto *clickableListItem2 = new tsl::elm::ListItem("Change mode");
 				clickableListItem2->setClickListener([](u64 keys) { 
 					if ((keys & HidNpadButton_A) && PluginRunning) {
-						*isDocked = !*isDocked;
+						ReverseNX_RT->isDocked = !(ReverseNX_RT->isDocked);
 						return true;
 					}
 					
@@ -270,7 +275,7 @@ public:
 				});
 				list->addItem(clickableListItem2);
 
-				if (*_wasDDRused) {
+				if (ReverseNX_RT->wasDDRused) {
 					auto *clickableListItem3 = new tsl::elm::ListItem("Change Handheld DDR");
 					clickableListItem3->setClickListener([](u64 keys) { 
 						if ((keys & HidNpadButton_A) && PluginRunning) {
@@ -328,8 +333,8 @@ public:
 
 		if (PluginRunning) {
 			if (i > 9) {
-				_def = *def;
-				_isDocked = *isDocked;
+				_def = ReverseNX_RT->def;
+				_isDocked = ReverseNX_RT->isDocked;
 				i = 0;
 				
 				if (_def) sprintf(SystemChar, "Controlled by system: Yes");
@@ -344,10 +349,10 @@ public:
 					else sprintf(DockedChar, "Mode: Fake Handheld");
 				}
 
-				if (!res_mode_ptr->handheld_res) strcpy(HandheldDDR, "Handheld DDR: Default");
-				else snprintf(HandheldDDR, sizeof(HandheldDDR), "Handheld DDR: %dx%d", resolutions[res_mode_ptr->handheld_res].first, resolutions[res_mode_ptr->handheld_res].second);
-				if (!res_mode_ptr->docked_res) strcpy(DockedDDR, "Docked DDR: Default");
-				else snprintf(DockedDDR, sizeof(DockedDDR), "Docked DDR: %dx%d", resolutions[res_mode_ptr->docked_res].first, resolutions[res_mode_ptr->docked_res].second);
+				if (!ReverseNX_RT->res.handheld_res) strcpy(HandheldDDR, "Handheld DDR: Default");
+				else snprintf(HandheldDDR, sizeof(HandheldDDR), "Handheld DDR: %dx%d", resolutions[ReverseNX_RT->res.handheld_res].first, resolutions[ReverseNX_RT->res.handheld_res].second);
+				if (!ReverseNX_RT->res.docked_res) strcpy(DockedDDR, "Docked DDR: Default");
+				else snprintf(DockedDDR, sizeof(DockedDDR), "Docked DDR: %dx%d", resolutions[ReverseNX_RT->res.docked_res].first, resolutions[ReverseNX_RT->res.docked_res].second);
 			}
 			else i++;
 		}
@@ -403,11 +408,7 @@ public:
 				uintptr_t base = (uintptr_t)shmemGetAddr(&_sharedmemory);
 				ptrdiff_t rel_offset = searchSharedMemoryBlock(base);
 				if (rel_offset > -1) {
-					isDocked = (bool*)(base + rel_offset + 4);
-					def = (bool*)(base + rel_offset + 5);
-					pluginActive = (bool*)(base + rel_offset + 6);
-					res_mode_ptr = (resolutionMode*)(base + rel_offset + 7);
-					_wasDDRused = (bool*)(base + rel_offset + 8);
+					ReverseNX_RT = (Shared*)(base + rel_offset);
 					PluginRunning = true;
 				}		
 			}
