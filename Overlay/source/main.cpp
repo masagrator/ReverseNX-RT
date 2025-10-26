@@ -233,7 +233,7 @@ public:
 			}
 			else {
 				renderer->drawString("ReverseNX-RT is running.", false, x, y+20, 20, renderer->a(0xFFFF));
-				if (!(ReverseNX_RT->pluginActive) && ReverseNX_RT->isDocked > -1) renderer->drawString("Game didn't check any mode!", false, x, y+40, 18, renderer->a(0xF33F));
+				if (!(ReverseNX_RT->pluginActive) && ReverseNX_RT->isDocked > ReverseNX_Switch_Invalid) renderer->drawString("Game didn't check any mode!", false, x, y+40, 18, renderer->a(0xF33F));
 				else {
 					renderer->drawString(SystemChar, false, x, y+42, 20, renderer->a(0xFFFF));
 					renderer->drawString(DockedChar, false, x, y+64, 20, renderer->a(0xFFFF));
@@ -252,7 +252,7 @@ public:
 			}
 	}), 150);
 
-		if (PluginRunning && ReverseNX_RT->pluginActive && ReverseNX_RT->isDocked > -1) {
+		if (PluginRunning && ReverseNX_RT->pluginActive && ReverseNX_RT->isDocked > ReverseNX_Switch_Invalid) {
 
 			auto *clickableListItem = new tsl::elm::ListItem("Change system control");
 			clickableListItem->setClickListener([](u64 keys) { 
