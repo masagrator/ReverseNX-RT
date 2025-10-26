@@ -36,9 +36,15 @@ enum res_mode {
 
 std::pair<int, int> resolutions[] = {{0 ,0}, {854, 480}, {960, 540}, {1120, 630}, {1280, 720}, {1440, 810}, {1600, 900}, {1920, 1080}};
 
+enum ReverseNX_state {
+	ReverseNX_Switch_Invalid = -1,
+	ReverseNX_Switch_Handheld = 0,
+	ReverseNX_Switch_Docked = 1
+};
+
 struct Shared {
 	uint32_t MAGIC;
-	bool isDocked;
+	int8_t isDocked;
 	bool def;
 	bool pluginActive;
 	struct {
@@ -227,7 +233,7 @@ public:
 			}
 			else {
 				renderer->drawString("ReverseNX-RT is running.", false, x, y+20, 20, renderer->a(0xFFFF));
-				if (!(ReverseNX_RT->pluginActive)) renderer->drawString("Game didn't check any mode!", false, x, y+40, 18, renderer->a(0xF33F));
+				if (!(ReverseNX_RT->pluginActive) && ReverseNX_RT->isDocked > -1) renderer->drawString("Game didn't check any mode!", false, x, y+40, 18, renderer->a(0xF33F));
 				else {
 					renderer->drawString(SystemChar, false, x, y+42, 20, renderer->a(0xFFFF));
 					renderer->drawString(DockedChar, false, x, y+64, 20, renderer->a(0xFFFF));
@@ -246,7 +252,7 @@ public:
 			}
 	}), 150);
 
-		if (PluginRunning && ReverseNX_RT->pluginActive) {
+		if (PluginRunning && ReverseNX_RT->pluginActive && ReverseNX_RT->isDocked > -1) {
 
 			auto *clickableListItem = new tsl::elm::ListItem("Change system control");
 			clickableListItem->setClickListener([](u64 keys) { 
