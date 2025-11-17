@@ -24,4 +24,5 @@
 | Penny's Big Breakaway | `0100CA901AA9C000` | 1.2.0 | Both |  |
 | Pizza Tower | `01006C601C5EC000` | 1.0.2 | Both |  |
 | Red Dead Redemption | `01007820196A6000` | 1.0.4 | Both |  |
+| Space Marshals | `0100782013A04000` | 1.0.2 | Both | In handheld mode changing resolution results in broken UI scaling |
 | Teenage Mutant Ninja Turtles: Splintered Fate | `01005CF01E784000` | 1.10.0 | Both |  |
