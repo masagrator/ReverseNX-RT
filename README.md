@@ -15,6 +15,7 @@
 | Harvest Moon: The Lost Valley | `010098502145A000` | 1.0.1 | Both | Anything lower than 720p targets 1280x720 |
 | Heretic + Hexen | `010005E01E5E6000` | 2.5.3 | Both |  |
 | Hero's Hour | `01005200216A0000` | 1.1.0 | Both |  |
+| Hitman: Absolution | `010037C022390000` | 1.2.2RC1 | Both | Anything lower than 720p targets 1280x720 |
 | Hitman: Blood Money - Reprisal | `010083A018262000` | 1.2_71586 | Both | Anything lower than 720p targets 1280x720 |
 | Horizon Chase 2 | `0100001019F6E000` | 1.6.9 | Both |  |
 | Metal Gear Solid | `010033301A9C0000` | 1.5.0 | Only Docked | Trying to set anything else than 1920x1080, 1280x720 or 854x480 results in 1920x1080 output, for some reason setting 854x480 results in 720x405 image |
