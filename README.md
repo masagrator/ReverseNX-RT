@@ -8,6 +8,7 @@
 | Crypt of the NecroDancer | `0100CEA007D08000` | 4.1.0-b5138 | Both |  |
 | EA SPORTS FC 24 | `0100BDB01A0E6000` | 1.5a.9115 | Only Docked | If anything else than 1080p is set, game targets 1280x720 |
 | EA SPORTS FC 25 | `010054E01D878000` | 1.7d.c638 | Only Docked | If anything else than 1080p is set, game targets 1280x720 |
+| Five Nights at Freddy's | `0100B6200D8D2000` | 1.0.2 | Both |  |
 | Flooded | `010022201D254000` | 1.0.1 | Both |  |
 | Gal*Gun Returns | `0100047013378000` | 1.0.4 | Both |  |
 | Gex Trilogy | `01007CC0228D0000` | 1.0.2 | Both |  |
