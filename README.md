@@ -12,6 +12,7 @@
 | Five Nights at Freddy's 2 | `01004EB00E43A000` | 1.0.4 | Both | Doesn't matter because game is internally always rendered at 1024x768 |
 | Five Nights at Freddy's 3 | `010056100E43C000` | 1.0.2 | Both | Doesn't matter because game is internally always rendered at 1024x768 |
 | Flooded | `010022201D254000` | 1.0.1 | Both |  |
+| Freddy Fazbear's Pizzeria Simulator | `01009C000E442000` | 1.0.1 | Both | Doesn't matter because game is internally always rendered at 1280x720 |
 | Gal*Gun Returns | `0100047013378000` | 1.0.4 | Both |  |
 | Gex Trilogy | `01007CC0228D0000` | 1.0.2 | Both |  |
 | Harvest Moon: Skytree Village | `0100DBD02145C000` | 1.0.1 | Both | Anything lower than 720p targets 1280x720 |
