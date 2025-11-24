@@ -32,3 +32,4 @@
 | Space Marshals | `0100782013A04000` | 1.0.2 | Both | In handheld mode changing resolution results in broken UI scaling |
 | Teenage Mutant Ninja Turtles: Splintered Fate | `01005CF01E784000` | 1.10.0 | Both |  |
 | The friends of Ringo Ishikawa | `010030700CBBC000` | 1.0.3 | Both |  |
+| Within The Blade | `0100BE5011486000` | 1.0.0 | Both | Doesn't matter because game is internally always rendered at 1280x720 |
