@@ -33,3 +33,4 @@
 | Teenage Mutant Ninja Turtles: Splintered Fate | `01005CF01E784000` | 1.10.0 | Both |  |
 | The friends of Ringo Ishikawa | `010030700CBBC000` | 1.0.3 | Both |  |
 | Within The Blade | `0100BE5011486000` | 1.0.0 | Both | Doesn't matter because game is internally always rendered at 1280x720 |
+| X-Morph Defense | `0100DF100B97C000` | 1.0.1 | Both | Setting anything above 1600x900 results in 1600x900 image. |
