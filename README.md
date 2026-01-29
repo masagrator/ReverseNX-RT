@@ -37,6 +37,7 @@
 | The friends of Ringo Ishikawa | `010030700CBBC000` | 1.0.3 | Both |  |
 | Turok | `010085500D5F6000` | 3.2.0 | Both |  |
 | Turok 2: Seeds of Evil | `0100CDC00D8D6000` | 3.0.0 | Both |  |
+| Unrailed! | `010042C011476000` | 1.0.12 | Both | If anything else than 720p is set, game targets 1920x1080 |
 | Within The Blade | `0100BE5011486000` | 1.0.0 | Both | Doesn't matter because game is internally always rendered at 1280x720 |
 | X-Morph Defense | `0100DF100B97C000` | 1.0.1 | Both | Setting anything above 1600x900 results in 1600x900 image. |
 | Zombie Driver | `01006CF00DA8C000` | 1.0.0 | Both | Setting anything above 1600x900 results in 1600x900 image. |
